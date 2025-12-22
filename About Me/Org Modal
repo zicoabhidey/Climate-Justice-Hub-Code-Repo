@@ -1,0 +1,440 @@
+<style>
+    #wp-custom-grid-456 {
+        font-family: "Martina Plantijn", serif;
+        background-color: transparent;
+        color: #1c1e21;
+        transition: padding 0.3s ease; 
+        box-sizing: border-box; /* Ensures padding doesn't break layout */
+    }
+
+
+    html.modal-open,
+    body.modal-open {
+        overflow: hidden !important;
+    }
+
+    /* --- Keyframes for Floating Effect (Global is OK) --- */
+    /* This keyframe definition is left, but it is no longer applied to .grid-item */
+    @keyframes float {
+        0% {
+            transform: translateY(0px);
+            box-shadow: 0 5px 15px 0px rgba(0,0,0,0.1);
+        }
+        50% {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 15px 0px rgba(0,0,0,0.05);
+        }
+        100% {
+            transform: translateY(0px);
+            box-shadow: 0 5px 15px 0px rgba(0,0,0,0.1);
+        }
+    }
+
+    /* --- Photo Grid Styles (Prefixed) --- */
+    #wp-custom-grid-456 .photo-grid-container {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr); /* Updated to 6 columns for desktop */
+        gap: 15px; /* Adjust the space between photos */
+        max-width: 1600px;
+        margin: 0 auto; /* Center the grid */
+    }
+    
+    #wp-custom-grid-456 .grid-item {
+        position: relative; /* Anchor for the absolute caption */
+        /* Removed animation: float 4s ease-in-out infinite; to stop the floating effect */
+        border-radius: 12px; /* Match the image radius */
+        overflow: hidden; /* Keep the scaling image contained */
+        cursor: pointer;
+        /* Added aspect-ratio for more uniform grid boxes */
+        aspect-ratio: 4 / 3; 
+        border: 2px solid #2e6b24; /* Added green border */
+    }
+
+    #wp-custom-grid-456 .grid-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain; /* Ensures images fill their container without distortion */
+        border-radius: 12px; /* Apply radius to all corners */
+        transition: transform 0.3s ease;
+        display: block;
+    }
+
+    /* Image hover effect */
+    #wp-custom-grid-456 .grid-item:hover img {
+        transform: scale(1.05); 
+    }
+
+    #wp-custom-grid-456 .grid-caption {
+        position: absolute;
+        /* Corrected to cover the entire item */
+        top: 0; 
+        left: 0;
+        width: 100%;
+        height: 100%;
+        
+        background: rgba(46, 107, 36, 0.7); /* Dark semi-transparent background */
+        color: #ffffff; /* White text */
+        
+        /* Added flex properties to center text */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        font-size: 1.1em;
+        text-align: center; /* Fallback */
+        
+        padding: 15px; /* Padding for a better look */
+        margin: 0; /* Reset default margin */
+        
+        /* Hide by default */
+        opacity: 0;
+        visibility: hidden;
+        
+        /* Smooth transition */
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+        
+        box-sizing: border-box; /* Ensure padding doesn't break layout */
+        
+        /* Match parent's border radius */
+        border-radius: 12px;
+    }
+
+
+    /* --- Modal (Pop-up Window) Styles (Prefixed) --- */
+    #wp-custom-grid-456 .photo-modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stays in place, covers the whole screen */
+        z-index: 10000; /* Increased z-index for WP admin bar */
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden; /* Disable scrolling on the modal container */
+        background-color: rgba(0, 0, 0, 0.85); /* Black background with opacity */
+        
+        /* Flexbox for centering the content */
+        justify-content: center;
+        align-items: center;
+    }
+
+    #wp-custom-grid-456 .photo-modal-content {
+        background-color: #ffffff;
+        margin: auto;
+        padding: 25px;
+        border-radius: 10px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh; /* Set a max height */
+        overflow-y: auto; /* Allow scrolling ONLY within the content box */
+        position: relative;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        animation: fadeIn 0.4s;
+        /* Apply the font inside the modal too */
+        font-family: "Martina Plantijn", serif;
+        font-weight: 400;
+        font-size: 1.2rem
+    }
+
+    /* --- Modal Animation Classes (Prefixed) --- */
+    #wp-custom-grid-456 .photo-modal-content.modal-closing {
+        animation: fadeOut 0.4s forwards;
+    }
+
+    /* Keyframes are global, so no prefix needed */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+    @keyframes fadeOut {
+        from {
+            opacity: 1;
+            transform: scale(1);
+        }
+        to {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+    }
+    
+    /* Modal Close Button (Prefixed) */
+    #wp-custom-grid-456 .photo-modal-close {
+        color: #aaa;
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        font-size: 28px;
+        font-weight: bold;
+        transition: color 0.2s ease;
+    }
+
+    #wp-custom-grid-456 .photo-modal-close:hover,
+    #wp-custom-grid-456 .photo-modal-close:focus {
+        color: #111;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    
+    /* Styles for content inside the modal (Prefixed) */
+    #wp-custom-grid-456 .modal-body h2,
+    #wp-custom-grid-456 .modal-body h3 {
+        margin-top: 0;
+        /* Ensure font is applied to headings */
+        font-family: "Martina Plantijn", serif; 
+    }
+    #wp-custom-grid-456 .modal-body img {
+        width: 100%;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+    
+    /* --- RESPONSIVE STYLES (Prefixed) --- */
+    
+    /* 4 columns for large tablets/laptops */
+    @media screen and (max-width: 1200px) {
+        #wp-custom-grid-456 .photo-grid-container {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+
+    /* 2 columns for tablets and mid-sized phones */
+    @media screen and (max-width: 768px) {
+        #wp-custom-grid-456 .photo-grid-container {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        #wp-custom-grid-456 h1,
+        #wp-custom-grid-456 h3 {
+            font-size: 1.75rem; /* Make heading smaller on mobile */
+        }
+    }
+
+    /* 1 column for small mobile phones */
+    @media screen and (max-width: 480px) {
+        #wp-custom-grid-456 .photo-grid-container {
+            grid-template-columns: 1fr;
+        }
+    }
+
+</style>
+
+
+<div id="wp-custom-grid-456">
+
+    
+
+<div class="photo-grid-container">
+    		
+    
+    <!-- Item 1 -->
+    <div class="grid-item" data-modal-target="#photoModal1">
+        <img src="https://centerforthehumanities.org/wp-content/uploads/2024/03/el-puente-logo.png" alt="el-puente-logo">
+    </div>
+
+    <!-- Item 2 -->
+    <div class="grid-item" data-modal-target="#photoModal2">
+        <img src="https://centerforthehumanities.org/wp-content/uploads/2024/03/the-point-logo.png" alt="the-point-logo">
+    </div>
+
+    <!-- Item 3 -->
+    <div class="grid-item" data-modal-target="#photoModal3">
+        <img src="https://centerforthehumanities.org/wp-content/uploads/2024/06/GOLES.png" alt="GOLES-logo">
+    </div>
+
+    <!-- Item 4 -->
+    <div class="grid-item" data-modal-target="#photoModal4">
+        <img src="https://centerforthehumanities.org/wp-content/uploads/2025/11/The-Brosis.png" alt="BroSis-logo">
+    </div>
+
+    <!-- Item 5 -->
+    <div class="grid-item" data-modal-target="#photoModal5">
+        <img src="https://centerforthehumanities.org/wp-content/uploads/2024/06/uprose1.png" alt="UPROSE-logo">
+    </div>
+
+    <!-- Item 6 -->
+    <div class="grid-item" data-modal-target="#photoModal6">
+        <img src="https://centerforthehumanities.org/wp-content/uploads/2024/03/Nos-Quedamos-logo.png" alt="Nos-Quedamos-logo">
+    </div>
+
+</div>
+
+    
+
+<div id="photoModal1" class="photo-modal">
+    <div class="photo-modal-content">
+        <span class="photo-modal-close">&times;</span>
+        <div class="modal-body">
+        <h3>El Puente</h3>
+        <p>Based out of Williamsburg and Bushwick for the past 41 years, El Puente bridges the worlds of health, education, and the arts with activism and community empowerment. Initially founded to address youth violence, El Puente’s work is broad – spanning the creation of the first human rights high school in the US to co-founding NYC-EJA, the Latino Commission on AIDS, and the Vieques Island protests in Puerto Rico.</p>
+        <h5><a href="https://www.elpuente.org/" style="color: #2E6B24; text-decoration: underline;">Learn More</a></h5>
+        </div>
+    </div>
+</div>
+
+    
+
+<div id="photoModal2" class="photo-modal">
+    <div class="photo-modal-content">
+        <span class="photo-modal-close">&times;</span>
+        <div class="modal-body">
+            <h3>The Point CDC</h3>
+            <p>Based out of Hunts Point for the past 29 years, The Point’s programming falls under three distinct headings: Youth Programming, Arts and Culture, and Community Development. Youth Programming uses the lens of environmental justice, youth development and arts and culture to create a more livable community and generate economic opportunity. Arts and Culture is dedicated to the cultivation/preservation of South Bronx culture and making the arts economically and geographically accessible to Hunts Point residents. Community Development seeks to support the academic, artistic, and positive social development of young people in Hunts Point and engage them as leaders in community development.</p>
+        <h5><a href="https://www.thepoint.org/" style="color: #2E6B24; text-decoration: underline;">Learn More</a></h5>
+        </div>
+    </div>
+</div>
+
+    
+
+<div id="photoModal3" class="photo-modal">
+    <div class="photo-modal-content">
+        <span class="photo-modal-close">&times;</span>
+        <div class="modal-body">
+            <h3>Good Old Lower East Side (GOLES)</h3>
+            <p>GOLES is a neighborhood housing and preservation organization that has served the Lower East Side of Manhattan since 1977. GOLES’ long-term goals are to (1) build the power of low-income residents to address displacement and gentrification; (2) preserve and expand the low-income housing stock; (3) assert community self-determination over the use of public space; and (4) ensure a clean and healthy environment where people live, work, and play.</p>
+            <h5><a href="https://www.goles.org/" style="color: #2E6B24; text-decoration: underline;">Learn More</a></h5>
+        </div>
+    </div>
+</div>
+
+<!-- --- NEW MODALS (4-6) --- -->
+<div id="photoModal4" class="photo-modal">
+    <div class="photo-modal-content">
+        <span class="photo-modal-close">&times;</span>
+        <div class="modal-body">
+        <h3>The Brotherhood Sister Sol</h3>
+        <p>For more than 25 years, The Brotherhood Sister Sol (BroSis) has been at the forefront of justice — racial, economic, educational, environmental, criminal and gender. Through unconditional love, around-the-clock support and wraparound programming, we make space for Black and Latinx young people to examine their roots, define their stories and awaken their agency.</p>
+        <h5><a href="https://brotherhood-sistersol.org/" style="color: #2E6B24; text-decoration: underline;">Learn More</a></h5>
+        </div>
+    </div>
+</div>
+
+<div id="photoModal5" class="photo-modal">
+    <div class="photo-modal-content">
+        <span class="photo-modal-close">&times;</span>
+        <div class="modal-body">
+        <h3>UPROSE</h3>
+        <p>Founded in 1966 and based in Sunset Park, UPROSE is determined to see a Just Transition, a move away from the extraction economy and towards climate solutions that put frontline communities in positions of leadership. UPROSE’s current campaigns focus on Climate Justice, Energy Democracy, and Anti-Displacement (in addition to work related to Transportation Justice, Youth Organizing, Community & Industrial Business Resiliency, Small Business Resiliency, and 100% Renewable Energy).</p>
+        <h5><a href="https://www.uprose.org/" style="color: #2E6B24; text-decoration: underline;">Learn More</a></h5>
+        </div>
+    </div>
+</div>
+
+<div id="photoModal6" class="photo-modal">
+    <div class="photo-modal-content">
+        <span class="photo-modal-close">&times;</span>
+        <div class="modal-body">
+        <h3>We Stay/Nos Quedamos</h3>
+        <p>Based out of the South Bronx for almost 30 years, WE STAY/Nos Quedamos is dedicated to substantively improving the health and well-being of the surrounding Melrose community and greater South Bronx region. Partnerships (in addition to NYC-EJA) include the South Bronx River Watershed Alliance, Our City Our Homes, and the Bronx Climate Justice Initiative. WE STAY/Nos Quedamos focuses on Advocacy through youth promotion and job development, financial literacy, and housing/tenant’s support with property management and on Environment – Sustainable Community Development through green building, brownfield remediation, and air quality-related initiatives.</p>
+        <h5><a href="https://www.nosquedamos.org/" style="color: #2E6B24; text-decoration: underline;">Learn More</a></h5>
+        </div>
+    </div>
+</div>
+
+
+</div> 
+
+<script>
+
+    (function() {
+
+        // Check if this script has already run to avoid double-binding
+        if (window.wpCustomGrid456Loaded) {
+            return;
+        }
+        window.wpCustomGrid456Loaded = true;
+
+        function initCustomGrid() {
+            
+            // --- MODAL SCRIPT ---
+            // Select elements *within* our specific wrapper to avoid conflicts
+            const gridWrapper = document.getElementById('wp-custom-grid-456');
+            
+            // If our component isn't on the page, don't run any code.
+            if (!gridWrapper) {
+                return;
+            }
+
+            const modalTriggers = gridWrapper.querySelectorAll('[data-modal-target]');
+            
+            // --- UPDATED SELECTORS ---
+            // We select all modals and close buttons *within* our grid wrapper
+            // This is more robust and scalable than hardcoding IDs.
+            const closeButtons = gridWrapper.querySelectorAll('.photo-modal-close');
+            const allModals = gridWrapper.querySelectorAll('.photo-modal');
+            
+            const htmlEl = document.documentElement;
+
+            modalTriggers.forEach(trigger => {
+                trigger.addEventListener('click', () => {
+                    const modalId = trigger.getAttribute('data-modal-target');
+                    // We must select the modal by its ID globally
+                    // (or check within our gridWrapper)
+                    const modal = gridWrapper.querySelector(modalId); 
+                    if (modal) {
+                        modal.style.display = 'flex';
+                        htmlEl.classList.add('modal-open'); 
+                        document.body.classList.add('modal-open');
+                    }
+                });
+            });
+
+            function closeModal(modal) {
+                if (!modal) return;
+                const modalContent = modal.querySelector('.photo-modal-content');
+                if (modalContent) {
+                    modalContent.classList.add('modal-closing');
+                }
+
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                    if (modalContent) {
+                        modalContent.classList.remove('modal-closing');
+                    }
+                    // Only remove modal-open class if no other modals are open
+                    const anyModalOpen = Array.from(allModals).some(m => m.style.display === 'flex');
+                    if (!anyModalOpen) {
+                        htmlEl.classList.remove('modal-open');
+                        document.body.classList.remove('modal-open');
+                    }
+                    
+                }, 400); 
+            }
+
+            closeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const modal = button.closest('.photo-modal');
+                    if (modal) {
+                        closeModal(modal);
+                    }
+                });
+            });
+
+            // Add click-off-to-close functionality for all modals
+            allModals.forEach(modal => {
+                modal.addEventListener('click', (event) => {
+                    // We check if the click was on the dark background (.photo-modal) 
+                    // and not on the content box (.photo-modal-content)
+                    if (event.target === modal) {
+                        closeModal(modal);
+                    }
+                });
+            });
+
+        }
+
+        // Run the script on DOMContentLoaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initCustomGrid);
+        } else {
+            // DOM is already ready
+            initCustomGrid();
+        }
+
+    })(); // End of the WordPress-safe IIFE wrapper
+</script>

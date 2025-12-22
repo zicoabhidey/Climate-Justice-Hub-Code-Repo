@@ -1,0 +1,320 @@
+<div id="customMessageBox" class="message-box">
+    <p id="messageBoxText"></p>
+    <button id="messageBoxClose" class="message-box-button">OK</button>
+</div>
+
+<div id="mcnp-wrapper">
+
+    <div id="previewContainer" class="preview-container">
+        <iframe 
+            id="previewIframe"
+            src="https://us2.campaign-archive.com/?u=e049a5f05e5e984aeb4460393&id=847bf638a1"
+            scrolling="no"
+            title="Newsletter Preview">
+        </iframe>
+        <div class="preview-prompt">Read Our Latest Newsletter</div>
+    </div>
+
+    <div id="modalOverlay" class="modal-overlay">
+        <div class="modal-content">
+            <div id="modalClose" class="modal-close" title="Close">&times;</div>
+            <iframe 
+                id="modalIframe"
+                src="" 
+                data-src="https://us2.campaign-archive.com/?u=e049a5f05e5e984aeb4460393&id=847bf638a1"
+                title="Newsletter Full View">
+            </iframe>
+        </div>
+    </div>
+
+</div>
+
+
+<style>
+    html.modal-active,
+    body.modal-active {
+        overflow: hidden !important; 
+    }
+    
+
+    #mcnp-wrapper {
+        
+        font-family: "Georgia", "Times New Roman", serif; 
+        
+        /* Replaced Tailwind's flex centering classes */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 1.5rem; /* Added padding for mobile safety */
+        box-sizing: border-box;
+    }
+
+    /* The container for the small preview */
+    #mcnp-wrapper .preview-container {
+        width: clamp(350px, 90vw, 500px); 
+        height: 642px; /* Fixed height for viewing window */
+        aspect-ratio: 500 / 542; 
+
+        overflow: hidden;
+        /* Styling */
+        border-radius: 0.75rem; /* 12px */
+        border: 1px solid #e5e7eb; /* gray-200 */
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* lg */
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        position: relative;
+    }
+
+    /* The iframe inside the preview container */
+    #mcnp-wrapper .preview-container iframe {
+        width: 1024px; 
+        height: 1466px; 
+        
+
+        transform-origin: top left;
+        
+        
+        border: none;
+        /* Disable user interaction on the scaled-down preview */
+        pointer-events: none;
+    }
+
+
+    #mcnp-wrapper .preview-prompt {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(0, 0, 0, 0.4); /* Darkened background */
+        color: #FFFFFF;
+        font-size: clamp(1rem, 5vw, 1.5rem);
+        font-weight: 700; 
+        opacity: 0;
+        transition: opacity 0.2s ease-in-out;
+        pointer-events: none; 
+        border-radius: 0.75rem; 
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7); 
+        text-align: center;
+        padding: 1rem;
+    }
+
+    #mcnp-wrapper .preview-container:hover .preview-prompt {
+        opacity: 1;
+    }
+
+    /* The fullscreen modal overlay */
+    #mcnp-wrapper .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.75);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 99990; 
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* The container for the iframe when expanded */
+    #mcnp-wrapper .modal-content {
+        position: relative;
+        background-color: white;
+        width: 90vw;
+        height: 90vh;
+        max-width: 1200px;
+        max-height: 800px; /* Capping height for better fit on screens */
+        border-radius: 0.75rem; 
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); 
+        overflow: hidden;
+        transform: scale(0.9);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    @media (min-width: 1024px) {
+        #mcnp-wrapper .modal-content {
+            max-height: 90vh;
+        }
+    }
+
+
+    /* The iframe inside the modal */
+    #mcnp-wrapper .modal-content iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    /* Close button for the modal */
+    #mcnp-wrapper .modal-close {
+        position: absolute;
+        top: 0.75rem; 
+        right: 1rem; 
+        font-size: 2.25rem; 
+        font-weight: 300; 
+        color: #4b5563; 
+        cursor: pointer;
+        line-height: 1;
+        z-index: 99991; 
+        padding: 0.25rem;
+        transition: color 0.2s;
+    }
+    
+    #mcnp-wrapper .modal-close:hover {
+        color: #000;
+    }
+
+    /* When the 'modal-open' class is added to the wrapper */
+    #mcnp-wrapper.modal-open .modal-overlay {
+        opacity: 1;
+        pointer-events: auto; /* Allow interaction */
+    }
+    
+    #mcnp-wrapper.modal-open .modal-content {
+        transform: scale(1);
+    }
+
+    /* Custom JavaScript Message Box for alerts */
+    .message-box {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 1.5rem;
+        background-color: #fff;
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        z-index: 100000;
+        display: none;
+        max-width: 300px;
+        text-align: center;
+    }
+    .message-box-button {
+        margin-top: 1rem;
+        padding: 0.5rem 1rem;
+        background-color: #3b82f6;
+        color: white;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        border: none;
+        transition: background-color 0.2s;
+    }
+    .message-box-button:hover {
+        background-color: #2563eb;
+    }
+</style>
+
+
+<script>
+    // Helper function to lock/unlock scroll on both html and body
+    function toggleScrollLock(lock) {
+        const action = lock ? 'add' : 'remove';
+        // Target <body>
+        document.body.classList[action]('modal-active');
+        // Target <html> (critical for cross-browser/WP scroll control)
+        document.documentElement.classList[action]('modal-active'); 
+    }
+
+    // Custom replacement for window.alert() and window.confirm()
+    function showMessage(message) {
+        const box = document.getElementById('customMessageBox');
+        document.getElementById('messageBoxText').textContent = message;
+        box.style.display = 'block';
+        
+        // MODIFICATION: Disable main body scroll while custom message box is open
+        toggleScrollLock(true);
+        
+        const closeButton = document.getElementById('messageBoxClose');
+        const handler = () => {
+            box.style.display = 'none';
+            // MODIFICATION: Re-enable main body scroll when custom message box is closed
+            toggleScrollLock(false); 
+            closeButton.removeEventListener('click', handler);
+        };
+        closeButton.addEventListener('click', handler);
+    }
+
+    (function() {
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const wrapper = document.getElementById('mcnp-wrapper');
+            const previewContainer = document.getElementById('previewContainer');
+            const modalOverlay = document.getElementById('modalOverlay');
+            const modalClose = document.getElementById('modalClose');
+            const modalIframe = document.getElementById('modalIframe');
+            const previewIframe = document.getElementById('previewIframe'); 
+
+            if (!wrapper || !previewContainer || !modalOverlay || !modalClose || !modalIframe || !previewIframe) {
+                console.warn('Mailchimp preview elements not found. Aborting script.');
+                return;
+            }
+
+            const newsletterSrc = modalIframe.getAttribute('data-src');
+
+            // Function to open modal
+            function openModal() {
+                if (modalIframe.src !== newsletterSrc) { modalIframe.src = newsletterSrc; }
+                wrapper.classList.add('modal-open');
+                // MODIFICATION: Disable main body scroll
+                toggleScrollLock(true);
+            }
+
+            // Function to close modal
+            function closeModal() {
+                wrapper.classList.remove('modal-open');
+                // MODIFICATION: Re-enable main body scroll
+                toggleScrollLock(false);
+            }
+
+            // --- Event Listeners ---
+            previewContainer.addEventListener('click', openModal);
+            modalClose.addEventListener('click', (e) => { e.stopPropagation(); closeModal(); });
+            modalOverlay.addEventListener('click', closeModal);
+            modalOverlay.querySelector('.modal-content').addEventListener('click', (e) => { e.stopPropagation(); });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && wrapper.classList.contains('modal-open')) { closeModal(); }
+            });
+
+            // --- Responsive Scaling and Cropping for Preview Iframe ---
+            const originalIframeWidth = 660; 
+            const originalIframeHeight = 1066; 
+            const topCropAmount = 150; 
+            
+            const leftCropAmount = 250; 
+            const rightCropAmount = 200; 
+            const bottomCropAmount = originalIframeHeight - 1000; 
+
+            function setIframeScaleAndClip() {
+                const containerWidth = previewContainer.clientWidth;
+                const scale = containerWidth / originalIframeWidth;
+                
+                const scaledTranslateY = topCropAmount * scale;
+                const scaledTranslateX = leftCropAmount * scale;
+
+                previewIframe.style.transform = `scale(${scale}) translate(-${scaledTranslateX}px, -${scaledTranslateY}px)`;
+                
+                
+                const scaledRightClip = rightCropAmount * scale;
+                const scaledBottomClip = bottomCropAmount * scale;
+                
+                
+                previewIframe.style.clipPath = `inset(0px ${scaledRightClip}px ${scaledBottomClip}px 0px)`;
+            }
+
+            // Initial scale and clip setting
+            setIframeScaleAndClip();
+
+            // Recalculate on window resize
+            window.addEventListener('resize', setIframeScaleAndClip);
+        });
+    })();
+</script>

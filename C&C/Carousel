@@ -1,0 +1,448 @@
+<div class="wordpress-block-container">
+        <div class="updates-heading">The Latest</div>
+        <div class="carousel-container">
+            <div class="carousel-slide active">
+                <div class="slide-content-wrapper" onclick="window.open('https://centerforthehumanities.org/event/join-the-nyc-climate-justice-hubs-professional-learning-community-plc/', '_self')">
+                    <div class="slide-image">
+                        <img src="https://centerforthehumanities.org/wp-content/uploads/2025/08/PLC-scaled.jpg" alt="Professional Learning Community">
+                    </div>
+                    <div class="slide-content">
+                        <h2 class="slide-title">The Hub's Professional Learning Community (PLC) Is On!</h2>
+                        
+                        <h3 class="slide-subheading">Fall 2025</h3>
+                        <p class="slide-description">The second annual Professional Learning Community (PLC) brings together students, faculty, and climate justice activists representing various CUNY campuses, NYC-EJA member organizations, and other institutions. Participants engage in a critical analysis of the socio-environmental factors influencing climate justice in the NYC's working-class communities of color that the New York City Environmental Justice Alliance (NYC-EJA) serves.</p>
+                    </div>
+                </div>
+            </div>
+
+
+           <button class="carousel-arrow prev">‹</button>
+            <button class="carousel-arrow next">›</button>
+
+            <div class="carousel-nav">
+                <div class="nav-dot active"></div>
+                <div class="nav-dot"></div>
+                <div class="nav-dot"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        .wordpress-block-container {
+            background-color: #2E6B24;
+            padding: 20px;
+            width: 100%;
+            margin-top: -40px !important;
+        }
+
+        .updates-heading {
+            font-family: "Martina Plantijn", serif;
+            font-weight: 400;
+            font-style: normal;
+            font-size: 1.1rem;
+            color: white;
+            margin-bottom: 20px;
+            text-align: left;
+            max-width: 1600px;
+            margin-left: auto;
+            margin-right: auto;
+            display: flex;
+            align-items: center;
+        }
+
+        /* --- THIS IS THE UPDATED RULE --- */
+        .updates-heading::before {
+            content: '';
+            display: block;
+            width: 10px;
+            height: 10px;
+            background-color: white;
+            border-radius: 50%;
+            margin-right: 12px;
+        }
+
+        .carousel-container {
+            max-width: 1600px;
+            width: 100%;
+            height: 400px;
+            margin: 5px auto;
+            background-color: transparent;
+            position: relative;
+            overflow: visible;
+        }
+
+        .carousel-slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .carousel-slide.active {
+            display: flex;
+            align-items: center;
+        }
+
+        .slide-content-wrapper {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2), 
+                        0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .slide-content-wrapper:hover {
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25), 
+                        0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .slide-image {
+            flex: 0 0 50%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top;
+            transition: transform 0.3s ease;
+        }
+
+        .slide-image img:hover {
+            transform: scale(1.05);
+        }
+
+        .slide-content {
+            flex: 1;
+            padding: 40px;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%;
+            background-color: white;
+        }
+
+        .slide-title {
+            font-family: "Martina Plantijn", serif;
+            font-weight: 400;
+            font-style: normal;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+
+        .slide-subheading {
+            font-family: "Martina Plantijn", serif;
+            font-weight: 400;
+            font-style: normal;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            line-height: 1.3;
+            opacity: 0.8;
+        }
+
+        .slide-description {
+            font-family: "Martina Plantijn", serif;
+            font-weight: 400;
+            font-style: normal;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            opacity: 0.95;
+        }
+
+        /* Navigation */
+        .carousel-nav {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-dot.active {
+            background: #6BFA53;
+            transform: scale(1.2);
+        }
+
+        /* Arrow Navigation */
+        .carousel-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(107, 250, 83, 0.8);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            color: black;
+            transition: all 0.3s ease;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .carousel-arrow:hover {
+            background: #6BFA53;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .carousel-arrow.prev {
+            left: 20px;
+        }
+
+        .carousel-arrow.next {
+            right: 20px;
+        }
+
+        /* Hide navigation when only one slide */
+        .carousel-container.single-slide .carousel-arrow,
+        .carousel-container.single-slide .carousel-nav {
+            display: none;
+        }
+
+        @media (max-width: 1200px) {
+            .carousel-container {
+                max-width: 90%;
+                height: 350px;
+            }
+            
+            .updates-heading {
+                max-width: 90%;
+                padding: 0 20px;
+            }
+            
+            .slide-content {
+                padding: 30px;
+            }
+            
+            .slide-title {
+                font-size: 2rem;
+            }
+
+            .slide-subheading {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .carousel-container {
+                height: auto;
+                min-height: 500px;
+            }
+            
+            .updates-heading {
+                font-size: 1.3rem;
+                padding: 0 10px;
+            }
+            
+            .carousel-slide.active {
+                flex-direction: column;
+            }
+
+            .slide-content-wrapper {
+                flex-direction: column;
+            }
+            
+            .slide-image {
+                flex: 0 0 250px;
+                width: 100%;
+            }
+            
+            .slide-content {
+                padding: 25px;
+                text-align: center;
+            }
+            
+            .slide-title {
+                font-size: 1.8rem;
+                margin-bottom: 8px;
+            }
+
+            .slide-subheading {
+                font-size: 1.1rem;
+                margin-bottom: 15px;
+            }
+            
+            .slide-description {
+                font-size: 1.1rem;
+                margin-bottom: 20px;
+            }
+            
+            .carousel-arrow {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+            
+            .carousel-arrow.prev {
+                left: 10px;
+            }
+            
+            .carousel-arrow.next {
+                right: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .slide-content {
+                padding: 20px;
+            }
+            
+            .slide-title {
+                font-size: 1.5rem;
+            }
+
+            .slide-subheading {
+                font-size: 1rem;
+            }
+            
+            .slide-description {
+                font-size: 1rem;
+            }
+            
+            .updates-heading {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+
+  
+
+    <script>
+        class ImageTextCarousel {
+            constructor() {
+                this.currentSlide = 0;
+                this.slides = document.querySelectorAll('.carousel-slide');
+                this.dots = document.querySelectorAll('.nav-dot');
+                this.prevBtn = document.querySelector('.carousel-arrow.prev');
+                this.nextBtn = document.querySelector('.carousel-arrow.next');
+                this.container = document.querySelector('.carousel-container');
+                this.autoSlideInterval = null;
+                
+                this.init();
+            }
+
+            init() {
+                this.checkSingleSlide();
+                if (this.slides.length > 1) {
+                    this.prevBtn.addEventListener('click', () => this.prevSlide());
+                    this.nextBtn.addEventListener('click', () => this.nextSlide());
+                    this.dots.forEach((dot, index) => {
+                        dot.addEventListener('click', () => this.goToSlide(index));
+                    });
+                    this.startAutoSlide();
+                    this.container.addEventListener('mouseenter', () => this.stopAutoSlide());
+                    this.container.addEventListener('mouseleave', () => this.startAutoSlide());
+                    this.addTouchSupport();
+                }
+            }
+
+            checkSingleSlide() {
+                if (this.slides.length <= 1) {
+                    this.container.classList.add('single-slide');
+                } else {
+                    this.container.classList.remove('single-slide');
+                }
+            }
+
+            showSlide(index) {
+                this.slides.forEach(slide => slide.classList.remove('active'));
+                this.dots.forEach(dot => dot.classList.remove('active'));
+                this.slides[index].classList.add('active');
+                this.dots[index].classList.add('active');
+                this.currentSlide = index;
+            }
+
+            nextSlide() {
+                const nextIndex = (this.currentSlide + 1) % this.slides.length;
+                this.showSlide(nextIndex);
+            }
+
+
+
+            prevSlide() {
+                const prevIndex = (this.currentSlide - 1 + this.slides.length) % this.slides.length;
+                this.showSlide(prevIndex);
+            }
+
+            goToSlide(index) {
+                this.showSlide(index);
+            }
+
+            startAutoSlide() {
+                if (this.slides.length <= 1) return;
+                this.autoSlideInterval = setInterval(() => this.nextSlide(), 5000);
+            }
+
+            stopAutoSlide() {
+                if (this.autoSlideInterval) {
+                    clearInterval(this.autoSlideInterval);
+                    this.autoSlideInterval = null;
+                }
+            }
+
+            addTouchSupport() {
+                if (this.slides.length <= 1) return;
+                let startX = 0;
+                let endX = 0;
+                this.container.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].clientX;
+                });
+                this.container.addEventListener('touchend', (e) => {
+                    endX = e.changedTouches[0].clientX;
+                    this.handleSwipe(startX, endX);
+                });
+                this.container.addEventListener('mousedown', (e) => {
+                    startX = e.clientX;
+                    this.container.style.cursor = 'grabbing';
+                });
+                this.container.addEventListener('mouseup', (e) => {
+                    endX = e.clientX;
+                    this.container.style.cursor = 'grab';
+                    this.handleSwipe(startX, endX);
+                });
+            }
+
+            handleSwipe(startX, endX) {
+                const threshold = 50;
+                const difference = startX - endX;
+                if (Math.abs(difference) > threshold) {
+                    if (difference > 0) {
+                        this.nextSlide();
+                    } else {
+                        this.prevSlide();
+                    }
+                }
+            }
+        }
+        document.addEventListener('DOMContentLoaded', () => new ImageTextCarousel());
+    </script>

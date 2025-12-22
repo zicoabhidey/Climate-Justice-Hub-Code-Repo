@@ -1,0 +1,395 @@
+<!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        /* Scoped Container */
+        #nyc-map-container {
+            position: relative;
+            height: 600px;
+            width: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            border: 1px solid #ccc;
+            background: #eee;
+            margin-bottom: 20px;
+        }
+
+        #map { height: 100%; width: 100%; z-index: 1; }
+
+        /* Legend Styling */
+        #nyc-map-container .legend {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 16px;
+            line-height: 1.6em;
+            color: #333;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            font-size: 13px;
+            backdrop-filter: blur(4px);
+        }
+        #nyc-map-container .legend h4 {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #555;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 4px;
+        }
+        #nyc-map-container .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        #nyc-map-container .legend i {
+            width: 18px;   /* Adjusted for rectangle */
+            height: 14px;  /* Adjusted for rectangle */
+            display: inline-block;
+            margin-right: 8px;
+            border-radius: 2px; /* Slight round for rectangle corners */
+            opacity: 0.8;
+            border: 1px solid rgba(0,0,0,0.2);
+        }
+        /* Specific shape for CUNY in legend (Blue Circle) */
+        #nyc-map-container .legend i.cuny-legend {
+            background: #0033A0; /* CUNY Blue */
+            width: 14px;
+            height: 14px;
+            border-radius: 50%; /* Make it a circle */
+            border: 2px solid #fff;
+            box-shadow: 0 0 3px rgba(0,0,0,0.3);
+            opacity: 1;
+        }
+
+        /* Map Labels */
+        .area-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #333;
+            text-align: center;
+            line-height: 1.1;
+            text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+            
+            /* INTERACTIVITY STYLES */
+            pointer-events: auto; /* Allow clicking */
+            cursor: pointer;      /* Show hand cursor */
+            
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: normal;
+            
+            /* Optional: Add a subtle transition to show it's clickable */
+            transition: transform 0.2s ease;
+        }
+        
+        .area-label:hover {
+            transform: scale(1.1); /* Slight zoom on hover */
+            z-index: 1000;
+        }
+
+        /* Loading Indicator */
+        #map-loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            text-align: center;
+            font-family: sans-serif;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+
+    <div id="nyc-map-container">
+        <div id="map-loader">
+            <div class="spinner"></div>
+            <div>Loading Map...</div>
+        </div>
+        <div id="map"></div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <script>
+        (function() {
+            // --- 1. DATA CONFIGURATION ---
+            
+            // Member Organizations (Added Addresses & URLs)
+            const orgData = [
+                { 
+                    name: "Nos Quedamos Community", 
+                    color: "#e74c3c", 
+                    zips: ["10451", "10460", "10454", "10455", "10452", "10456"], 
+                    labelOffset: [0.01, 0],
+                    address: "754 Melrose Ave, Bronx, NY 10451",
+                    url: "https://www.nosquedamos.org/"
+                },
+                { 
+                    name: "GOLES Community", 
+                    color: "#2ecc71", 
+                    zips: ["10002", "10003", "10009", "10038"], 
+                    labelOffset: [0, 0],
+                    address: "171 Avenue B, New York, NY 10009",
+                    url: "https://www.goles.org/"
+                },
+                { 
+                    name: "The Point CDC Community", 
+                    color: "#3498db", 
+                    zips: ["10474", "10459"], 
+                    labelOffset: [0, 0.01],
+                    address: "940 Garrison Ave, Bronx, NY 10474",
+                    url: "https://thepoint.org/"
+                },
+                { 
+                    name: "UPROSE Community", 
+                    color: "#9b59b6", 
+                    zips: ["11232", "11220"], 
+                    labelOffset: [0, 0],
+                    address: "462 36th St #3A, Brooklyn, NY 11232",
+                    url: "https://www.uprose.org/"
+                },
+                { 
+                    name: "El Puente Community", 
+                    color: "#f1c40f", 
+                    zips: ["11211", "11249", "11206", "11207", "11221", "11237"], 
+                    labelOffset: [0.01, 0],
+                    address: "211 South 4th St, Brooklyn, NY 11211",
+                    url: "https://elpuente.us/"
+                },
+                { 
+                    name: "Brotherhood Sister Sol Community", 
+                    color: "#1abc9c", 
+                    zips: ["10031", "10030", "10023", "10024", "10025", "10026", "10027", "10028", "10032", "10033", "10035", "10037", "10039", "10451"], 
+                    labelOffset: [0.01, -0.02],
+                    address: "512 W 143rd St, New York, NY 10031",
+                    url: "https://brotherhood-sistersol.org/"
+                }
+            ];
+
+            // CUNY Data (Extracted from CSV)
+            const cunyData = [
+                { name: "Borough of Manhattan Community College", lat: 40.717367, lng: -74.012178, address: "199 Chambers Street, New York, NY", url: "https://www.bmcc.cuny.edu/" },
+                { name: "Bronx Community College", lat: 40.856673, lng: -73.910127, address: "2155 University Avenue, Bronx, NY", url: "https://www.bcc.cuny.edu/" },
+                { name: "Hostos Community College", lat: 40.817828, lng: -73.926862, address: "500 Grand Concourse, Bronx, NY", url: "http://hostos.cuny.edu" },
+                { name: "Kingsborough Community College", lat: 40.578349, lng: -73.934465, address: "2001 Oriental Boulevard, Brooklyn, NY", url: "http://kbcc.cuny.edu" },
+                { name: "LaGuardia Community College", lat: 40.743951, lng: -73.935154, address: "31-10 Thomson Avenue, Long Island City, NY", url: "http://www.laguardia.edu" },
+                { name: "Queensborough Community College", lat: 40.760010, lng: -73.758369, address: "222-05 56th Avenue, Bayside, NY", url: "http://www.qcc.cuny.edu" },
+                { name: "Guttman Community College", lat: 40.752846, lng: -73.984133, address: "50 West 40th Street, New York, NY", url: "http://guttman.cuny.edu" },
+                { name: "Baruch College", lat: 40.740977, lng: -73.984252, address: "55 Lexington Ave at 24th Street, New York, NY", url: "http://www.baruch.cuny.edu" },
+                { name: "Brooklyn College", lat: 40.630276, lng: -73.955545, address: "2900 Bedford Avenue, Brooklyn, NY", url: "http://brooklyn.cuny.edu" },
+                { name: "The City College of New York", lat: 40.819548, lng: -73.949518, address: "160 Convent Avenue, New York, NY", url: "http://ccny.cuny.edu" },
+                { name: "Hunter College", lat: 40.768731, lng: -73.964915, address: "695 Park Avenue, New York, NY", url: "http://hunter.cuny.edu" },
+                { name: "John Jay College of Criminal Justice", lat: 40.769939, lng: -73.986469, address: "524 West 59th Street, New York, NY", url: "http://www.jjay.cuny.edu" },
+                { name: "Lehman College", lat: 40.873342, lng: -73.894139, address: "250 Bedford Park Boulevard West, Bronx, NY", url: "http://www.lehman.cuny.edu" },
+                { name: "Medgar Evers College", lat: 40.666240, lng: -73.957349, address: "1650 Bedford Avenue, Brooklyn, NY", url: "http://www.mec.cuny.edu" },
+                { name: "New York City College of Technology", lat: 40.695507, lng: -73.987882, address: "300 Jay Street, Brooklyn, NY", url: "http://www.citytech.cuny.edu" },
+                { name: "Queens College", lat: 40.736316, lng: -73.820035, address: "65-30 Kissena Blvd, Flushing, NY", url: "http://www.qc.cuny.edu" },
+                { name: "College of Staten Island", lat: 40.608648, lng: -74.153563, address: "2800 Victory Boulevard, Staten Island, NY", url: "http://www.csi.cuny.edu" },
+                { name: "York College", lat: 40.702821, lng: -73.795776, address: "94 - 20 Guy R. Brewer Blvd, Jamaica, NY", url: "http://www.york.cuny.edu" },
+                { name: "Craig Newmark Graduate School of Journalism", lat: 40.755343, lng: -73.992226, address: "219 West 40th Street, New York, NY", url: "http://www.journalism.cuny.edu" },
+                { name: "CUNY Graduate Center", lat: 40.748724, lng: -73.984205, address: "365 Fifth Avenue, New York, NY", url: "http://www.gc.cuny.edu" },
+                { name: "CUNY School of Law", lat: 40.747639, lng: -73.943676, address: "2 Court Square, Long Island City, NY", url: "http://www.law.cuny.edu" },
+                { name: "CUNY School of Labor and Urban Studies", lat: 40.752302, lng: -73.981881, address: "25 West 43rd Street, 19th Floor, New York, NY", url: "https://slu.cuny.edu/" },
+                { name: "CUNY School of Professional Studies", lat: 40.754027, lng: -73.990428, address: "119 West 31st Street, New York, NY", url: "http://sps.cuny.edu" },
+                { name: "CUNY Graduate School of Public Health", lat: 40.806670, lng: -73.951520, address: "55 W 125th St, New York, NY", url: "http://sph.cuny.edu" }
+            ];
+
+            const zipLookup = {};
+            orgData.forEach(org => {
+                org.zips.forEach(zip => {
+                    if (!zipLookup[zip]) zipLookup[zip] = [];
+                    zipLookup[zip].push(org);
+                });
+            });
+            const orgBounds = {};
+
+            // --- 2. MAP INITIALIZATION ---
+            
+            const map = L.map('map', { zoomControl: false }).setView([40.76, -73.96], 11);
+            L.control.zoom({ position: 'topright' }).addTo(map);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 19
+            }).addTo(map);
+
+            // --- 3. LAYER GROUPS & PANES ---
+            
+            // Create a custom pane for CUNY markers to ensure they stay on TOP of polygons
+            map.createPane('cunyPane');
+            map.getPane('cunyPane').style.zIndex = 650; // Higher than overlayPane (400) and markerPane (600)
+
+            const memberLayer = L.layerGroup().addTo(map);
+            const cunyLayer = L.layerGroup().addTo(map);
+
+            // --- 4. CUNY MARKERS (Reverted to Blue Dots) ---
+            
+            cunyData.forEach(campus => {
+                const marker = L.circleMarker([campus.lat, campus.lng], {
+                    pane: 'cunyPane', // Assign to our custom high-zIndex pane
+                    radius: 6,
+                    fillColor: "#0033A0", // CUNY Blue
+                    color: "#ffffff",
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.9
+                });
+
+                marker.bindPopup(`
+                    <div style="min-width:200px; font-family:sans-serif;">
+                        <h4 style="margin:0 0 5px 0; color:#0033A0;">${campus.name}</h4>
+                        <p style="margin:0 0 8px 0; font-size:12px;">${campus.address}</p>
+                        <a href="${campus.url}" target="_blank" style="color:#0073aa; text-decoration:none; font-weight:bold;">Visit Website &rarr;</a>
+                    </div>
+                `);
+
+                marker.addTo(cunyLayer);
+            });
+
+            // --- 5. MEMBER ORG POLYGONS ---
+            const geoJsonUrl = "https://raw.githubusercontent.com/fedhere/PUI2015_EC/master/mam1612_EC/nyc-zip-code-tabulation-areas-polygons.geojson";
+
+            function style(feature) {
+                const zip = feature.properties.postalCode;
+                const matches = zipLookup[zip];
+                if (matches && matches.length > 0) {
+                    return { fillColor: matches[0].color, weight: 1, opacity: 1, color: 'white', dashArray: '3', fillOpacity: 0.6 };
+                } else {
+                    return { fillColor: '#ecf0f1', weight: 1, opacity: 0.5, color: '#bdc3c7', fillOpacity: 0.2 };
+                }
+            }
+
+            function highlightFeature(e) {
+                const layer = e.target;
+                const zip = layer.feature.properties.postalCode;
+                if(zipLookup[zip]) {
+                    layer.setStyle({ weight: 3, color: '#666', dashArray: '', fillOpacity: 0.8 });
+                    layer.bringToFront();
+                }
+            }
+            function resetHighlight(e) { if (geojsonLayer) geojsonLayer.resetStyle(e.target); }
+
+            function onEachFeature(feature, layer) {
+                const zip = feature.properties.postalCode;
+                const matches = zipLookup[zip];
+                if (matches) {
+                    // Only keep hover for visual feedback on Polygons (not clickable)
+                    layer.on({ mouseover: highlightFeature, mouseout: resetHighlight });
+                    
+                    matches.forEach(m => {
+                        if (!orgBounds[m.name]) orgBounds[m.name] = L.latLngBounds(layer.getBounds().getSouthWest(), layer.getBounds().getNorthEast());
+                        else orgBounds[m.name].extend(layer.getBounds());
+                    });
+                }
+            }
+
+            let geojsonLayer;
+            $.getJSON(geoJsonUrl).done(function(data) {
+                const loader = document.getElementById('map-loader');
+                if(loader) loader.style.display = 'none';
+
+                geojsonLayer = L.geoJson(data, { style: style, onEachFeature: onEachFeature }).addTo(memberLayer);
+
+                // Add Labels
+                Object.keys(orgBounds).forEach(orgName => {
+                    const bounds = orgBounds[orgName];
+                    let center = bounds.getCenter();
+                    const orgConfig = orgData.find(o => o.name === orgName);
+                    
+                    if (orgConfig) {
+                        if(orgConfig.labelOffset) {
+                            center = L.latLng(center.lat + orgConfig.labelOffset[0], center.lng + orgConfig.labelOffset[1]);
+                        }
+
+                        const labelMarker = L.marker(center, {
+                            icon: L.divIcon({ 
+                                className: 'area-label', 
+                                html: orgName, 
+                                iconSize: [120, 40], 
+                                iconAnchor: [60, 20] 
+                            }),
+                            interactive: true // IMPORTANT: Makes the text clickable
+                        });
+
+                        // Bind Popup to Label
+                        labelMarker.bindPopup(`
+                            <div style="font-family:sans-serif; text-align:center; min-width: 200px;">
+                                <h4 style="margin:0 0 8px 0; color:${orgConfig.color}; border-bottom:1px solid #ccc; padding-bottom:5px;">${orgName}</h4>
+                                <p style="margin:0 0 10px 0; font-size:13px; line-height:1.4;">
+                                    <b>Address:</b><br>${orgConfig.address}
+                                </p>
+                                <a href="${orgConfig.url}" target="_blank" style="display:inline-block; padding:8px 16px; background:${orgConfig.color}; color:white; text-decoration:none; border-radius:4px; font-weight:bold; font-size:12px; transition: opacity 0.2s;">
+                                    Visit Website &rarr;
+                                </a>
+                            </div>
+                        `);
+
+                        labelMarker.addTo(memberLayer);
+                    }
+                });
+
+                // Fit bounds
+                const targetFeatures = data.features.filter(f => zipLookup[String(f.properties.postalCode)]);
+                if (targetFeatures.length > 0) {
+                     const group = L.geoJson({ type: "FeatureCollection", features: targetFeatures });
+                     map.invalidateSize();
+                     map.fitBounds(group.getBounds(), { padding: [50, 50] });
+                }
+            }).fail(function() {
+                const loader = document.getElementById('map-loader');
+                if(loader) { loader.innerHTML = "Error loading map data."; loader.style.color = "red"; }
+            });
+
+            // --- 6. LEGEND ---
+            const legend = L.control({position: 'bottomright'});
+            legend.onAdd = function (map) {
+                const div = L.DomUtil.create('div', 'legend');
+                let content = '<h4>Legend</h4>';
+                
+                // CUNY Item
+                content += `
+                    <div class="legend-item">
+                        <i class="cuny-legend"></i>
+                        <span>CUNY Campus</span>
+                    </div>
+                `;
+
+                // Org Items
+                orgData.forEach(org => {
+                    content += `
+                        <div class="legend-item">
+                            <i style="background:${org.color}"></i>
+                            <span>${org.name}</span>
+                        </div>
+                    `;
+                });
+                div.innerHTML = content;
+                return div;
+            };
+            legend.addTo(map);
+
+            // --- 7. LAYER CONTROL ---
+            const overlays = {
+                "Member Orgs": memberLayer,
+                "CUNY Campuses": cunyLayer
+            };
+            L.control.layers(null, overlays, { position: 'topright', collapsed: true }).addTo(map);
+
+        })();
+    </script>

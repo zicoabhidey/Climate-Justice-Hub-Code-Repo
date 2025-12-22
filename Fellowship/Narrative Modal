@@ -1,0 +1,710 @@
+<style>
+    #wp-custom-grid-123 {
+        font-family: "Martina Plantijn", serif;
+        /* REMOVED GREY BACKGROUND COLOR */
+        background-color: transparent; 
+        color: #1c1e21;
+        transition: padding 0.3s ease;
+        box-sizing: border-box;
+        padding: 20px; /* Added slight padding for better appearance */
+    }
+
+
+    html.modal-open,
+    body.modal-open {
+        overflow: hidden !important;
+    }
+
+    /* --- Keyframes for Floating Effect (Global is OK) --- */
+    @keyframes float {
+        0% {
+            transform: translateY(0px);
+            box-shadow: 0 5px 15px 0px rgba(0,0,0,0.1);
+        }
+        50% {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 15px 0px rgba(0,0,0,0.05);
+        }
+        100% {
+            transform: translateY(0px);
+            box-shadow: 0 5px 15px 0px rgba(0,0,0,0.1);
+        }
+    }
+
+    /* --- Photo Grid Styles (Prefixed) --- */
+    #wp-custom-grid-123 .photo-grid-container {
+        display: grid;
+        /* --- UPDATED TO 7 COLUMNS --- */
+        grid-template-columns: repeat(7, 1fr); 
+        gap: 15px; /* Adjust the space between photos */
+        max-width: 1600px;
+        margin: 0 auto; /* Center the grid */
+    }
+    
+    #wp-custom-grid-123 .grid-item {
+        position: relative; 
+        border-radius: 12px; 
+        overflow: hidden; 
+        cursor: pointer;
+        
+        /* --- LIGHT GREEN BACKGROUND (retained) --- */
+        padding-top: 66.66%; 
+        background-color: #D4EDDA; /* Light Green */
+    }
+
+    /* Removed .grid-item img styles as the img tags are gone */
+
+    /* Image hover effect - Removed scale(1.05) as there's no image, and removed box shadow on hover as requested. */
+    #wp-custom-grid-123 .grid-item:hover {
+        box-shadow: None;/* No box shadow on hover */
+    }
+
+    #wp-custom-grid-123 .grid-caption {
+        position: absolute;
+        /* Caption covers the entire item defined by the padding-top hack */
+        top: 0; 
+        left: 0;
+        width: 100%;
+        height: 100%;
+        
+        /* --- BACKGROUND IS TRANSPARENT BY DEFAULT --- */
+        background: transparent; 
+        /* --- DEFAULT TEXT COLOR IS BLACK (visible) --- */
+        color: #1c1e21; /* Black */
+        text-shadow: none; 
+        
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        font-size: 1.1em;
+        text-align: center; 
+        
+        padding: 15px; 
+        margin: 0; 
+        
+        /* --- CAPTION IS ALWAYS VISIBLE (TEXT IS VISIBLE) --- */
+        opacity: 1;
+        visibility: visible;
+        
+        /* Transition background and color */
+        transition: background 0.3s ease, color 0.3s ease;
+        
+        box-sizing: border-box; 
+        
+        border-radius: 12px;
+    }
+
+    /* Show caption on hover: overlay appears (background changes) and text turns white */
+    #wp-custom-grid-123 .grid-item:hover .grid-caption {
+        /* --- DARK GREEN OVERLAY APPEARS --- */
+        background: rgba(46, 107, 36, 0.9); 
+        /* --- TEXT BECOMES WHITE ON HOVER --- */
+        color: #ffffff; 
+    }
+
+
+    /* --- Modal (Pop-up Window) Styles (Prefixed) --- */
+    #wp-custom-grid-123 .photo-modal {
+        display: none; 
+        position: fixed; 
+        z-index: 10000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden; 
+        background-color: rgba(0, 0, 0, 0.85); 
+        
+        justify-content: center;
+        align-items: center;
+    }
+
+    #wp-custom-grid-123 .photo-modal-content {
+        background-color: #ffffff;
+        margin: auto;
+        padding: 25px;
+        border-radius: 10px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh; 
+        overflow-y: auto; 
+        position: relative;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        animation: fadeIn 0.1s;
+        font-family: "Martina Plantijn", serif; 
+    }
+
+    /* --- Modal Animation Classes (Prefixed) --- */
+    #wp-custom-grid-123 .photo-modal-content.modal-closing {
+        animation: fadeOut 0.1s forwards;
+    }
+
+    /* Keyframes are global, so no prefix needed */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+    @keyframes fadeOut {
+        from {
+            opacity: 1;
+            transform: scale(1);
+        }
+        to {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+    }
+    
+    /* Modal Close Button (Prefixed) */
+    #wp-custom-grid-123 .photo-modal-close {
+        color: #aaa;
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        font-size: 28px;
+        font-weight: bold;
+        transition: color 0.2s ease;
+    }
+
+    #wp-custom-grid-123 .photo-modal-close:hover,
+    #wp-custom-grid-123 .photo-modal-close:focus {
+        color: #111;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    
+    /* Styles for content inside the modal (Prefixed) */
+    #wp-custom-grid-123 .modal-body h2,
+    #wp-custom-grid-123 .modal-body h3 {
+        margin-top: 0;
+        font-family: "Martina Plantijn", serif; 
+    }
+    #wp-custom-grid-123 .modal-body img {
+        width: 100%;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+    
+    /* --- RESPONSIVE STYLES (Prefixed) --- */
+    @media screen and (max-width: 768px) {
+        #wp-custom-grid-123 .photo-grid-container {
+            /* Keep it at 1 column on smaller screens */
+            grid-template-columns: 1fr;
+        }
+        #wp-custom-grid-123 h1,
+        #wp-custom-grid-123 h3 {
+            font-size: 1.75rem; /* Make heading smaller on mobile */
+        }
+    }
+    /* Added breakpoint for smaller desktop/tablet views to prevent too squished 4-columns */
+    @media screen and (max-width: 1024px) and (min-width: 769px) {
+        #wp-custom-grid-123 .photo-grid-container {
+            /* Switch to 2 columns on tablets */
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+</style>
+
+
+<div id="wp-custom-grid-123">
+
+<!-- Photo Grid Container now has 7 items -->
+<div class="photo-grid-container">
+    
+    <!-- Item 1 -->
+    <div class="grid-item" data-modal-target="#photoModal1">
+        <p class="grid-caption">Narrative 1: Luke Rodriguez</p>
+    </div>
+
+    <!-- Item 2 -->
+    <div class="grid-item" data-modal-target="#photoModal2">
+        <p class="grid-caption">Narrative 2: Hennessy Garcia</p>
+    </div>
+
+    <!-- Item 3 -->
+    <div class="grid-item" data-modal-target="#photoModal3">
+        <p class="grid-caption">Narrative 3: Anakaren Santana</p>
+    </div>
+    
+    <!-- Item 4 (Demo Item) -->
+    <div class="grid-item" data-modal-target="#photoModal4">
+        <p class="grid-caption">Narrative 4: Arnab Joseph Gomes</p>
+    </div>
+    
+    <!-- Item 5 (New) -->
+    <div class="grid-item" data-modal-target="#photoModal5">
+        <p class="grid-caption">Narrative 5: Angela Zhou</p>
+    </div>
+    
+    <!-- Item 6 (New) -->
+    <div class="grid-item" data-modal-target="#photoModal6">
+        <p class="grid-caption">Narrative 6: Alex Arturo</p>
+    </div>
+    
+    <!-- Item 7 (New) -->
+    <div class="grid-item" data-modal-target="#photoModal7">
+        <p class="grid-caption">Narrative 7: Vladimir Prikhodko</p>
+    </div>
+</div>
+
+<!-- Modals -->
+
+<div id="photoModal1" class="photo-modal">
+    <div class="photo-modal-content">
+        <span class="photo-modal-close">&times;</span>
+        <div class="modal-body">
+        <h3>Narrative 1: Adnaan Elahi (Luke Rodriguez)</h3>
+    <p class="c3">
+      <span class="c8">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Luke Rodriguez is a junior at Baruch College majoring in Economics with a minor in Environmental Sustainability. Luke was born, raised, and currently lives in New Jersey City. Most CUNY students are commuters residing in the 5 boroughs, so </span>
+      <span class="c8">Luke adds a unique perspective to our narrative as a commuter student that does not live in New York City.</span>
+      <span class="c8">&nbsp;</span>
+      <span class="c8">He shares how the gentrification taking place in New York City has also impacted neighboring towns and localities</span>
+      <span class="c0">, emphasizing the importance of communities mobilizing against corporate greed to protect local interests in the fight for climate justice.</span>
+    </p>
+    <p class="c3">
+      <span class="c0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Reflecting on recent demographic shifts in Jersey City, Luke says, &ldquo;I think within my own neighborhood, I&rsquo;ve seen a lot more luxury condos being developed very quickly in the past few years. That means a lot of new residents have moved into Jersey City with a lot more disposable income&hellip; I can imagine that in the next 5-10 years there will be higher priced businesses like Whole Foods and Sweetgreens.&rdquo; Luke adds that he recognizes how developers have capitalized on the rise of working professionals turning to Jersey City for cheaper rent prices. Unfortunately, the construction of waterfront condos and other luxury properties intended for these new residents have transformed Jersey City from a vibrant cluster of ethnic communities to a perpetual construction zone. </span>
+    </p>
+    <p class="c3">
+      <span class="c0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This has harmful implications for air pollution and</span>
+    </p>
+    <p class="c3">
+      <span class="c0">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Luke fears that this will harm the cultural identity of Jersey City, specifically threatening local businesses beloved by the community. Working professionals pouring into Jersey City from New York are not just displacing residents, but also beloved businesses. He repeatedly stresses the importance of standing by family-owned businesses as a way to advocate against the gentrification of Jersey City. &ldquo;To protect neighborhood institutions, we need to be careful with where we spend our money and who we give business to,&rdquo; Luke proposes. In other words, residents should refrain from accepting gentrified identities imposed by developers, seeking instead to support businesses stemming from the cultural narratives of the community. </span>
+    </p>
+    <p class="c2">
+      <span class="c0">This speaks to the economic independence of communities vulnerable to capital development and corporate greed. Even with community support, it is difficult for a mom-and-pop shop to withstand the domineering influence of large corporate entities like Starbucks and McDonald&rsquo;s attempting to replace them. However, showing up also weaves a narrative of its own; it demonstrates resistance. &ldquo;We must serve these businesses the same way that they served our communities,&rdquo; Luke implores.</span>
+    </p>
+        </div>
+    </div>
+</div>
+
+<div id="photoModal2" class="photo-modal">
+    <div class="photo-modal-content">
+        <span class="photo-modal-close">&times;</span>
+        <div class="modal-body">
+            <h3>Narrative 2: Louie Apostol (Hennessy Garcia)</h3>
+    <p class="c6 c10">
+      <span class="c0">Hennessy Garcia recently graduated from Medgar Evers College with a degree in Environmental Science and a concentration in Environmental Health. She now lives in Astoria, Queens, but her environmental consciousness was shaped by Morris Heights in the Bronx&mdash;the neighborhood where she grew up, and where the unequal impacts of climate and environmental policy were impossible to ignore.</span>
+    </p>
+    <p class="c6 c10">
+      <span class="c0">&ldquo;Even as a kid, you could see how dirty the streets were,&rdquo; she says. &ldquo;My block was okay, but as soon as you hit the main roads, it was like a different world&mdash;trash everywhere, no trees, just concrete.&rdquo;</span>
+    </p>
+    <p class="c6 c10">
+      <span class="c0">Hennessy describes her old neighborhood as a place of contradictions. On the surface, it was home&mdash;family, friends, community. But under that surface, she says, there were systemic disparities that made daily life harder, hotter, and more hazardous. &ldquo;There&rsquo;s less tree canopy here. Fewer trees means more heat. And more heat means more health problems,&rdquo; she says. &ldquo;It&rsquo;s the kind of thing people don&rsquo;t always notice, but it affects you.&rdquo;</span>
+    </p>
+    <p class="c6 c10">
+      <span class="c0">She remembers learning that the South Bronx has some of the highest asthma rates in the country. &ldquo;It made sense,&rdquo; she says. &ldquo;We live right next to the highways. You just walk a few blocks and there&rsquo;s a major one. You don&rsquo;t need data to know the air isn&rsquo;t good&mdash;you feel it in your lungs.&rdquo;</span>
+    </p>
+    <p class="c6 c10">
+      <span class="c0">But what frustrates her most is the slow, creeping nature of gentrification&mdash;what she calls &ldquo;the small changes that tell you something big is coming.&rdquo; She lists them off: &ldquo;New sidewalks, bike lanes, little things that make the place look nicer. That&rsquo;s when you know rent&rsquo;s going up. That&rsquo;s when people start getting pushed out.&rdquo;</span>
+    </p>
+    <p class="c6 c10">
+      <span class="c0">She points to the new luxury buildings rising next to public housing. &ldquo;It&rsquo;s like they&rsquo;re dropping luxury in the middle of a poor neighborhood,&rdquo; she says. &ldquo;It doesn&rsquo;t feel like it&rsquo;s for us. It feels like it&rsquo;s replacing us.&rdquo;</span>
+    </p>
+    <p class="c6 c10">
+      <span class="c0">While she supports investments in public health and infrastructure, she&rsquo;s wary of who benefits. &ldquo;Yes, I want cleaner streets. I want green space. But not if it means displacing people who&rsquo;ve been here forever.&rdquo;</span>
+    </p>
+    <p class="c6 c10">
+      <span class="c0">For Hennessy, climate justice is about more than carbon emissions and rising sea levels&mdash;it&rsquo;s about access, information, and power. &ldquo;In poorer areas, there&rsquo;s less access to information,&rdquo; she says. &ldquo;So how are you supposed to care about green space or air quality if no one&rsquo;s ever told you why it matters?&rdquo;</span>
+    </p>
+    <p class="c6 c10">
+      <span class="c0">She believes that this disconnect is something CUNY could help bridge&mdash;but currently doesn&rsquo;t. &ldquo;At my school, we talk about environmental science, but not really environmental justice,&rdquo; she says. &ldquo;I learned more about that in electives at my last school. It depends on what classes you take, and that&rsquo;s a problem.&rdquo;</span>
+    </p>
+    <p class="c6 c10">
+      <span class="c0">Even though CUNY has campuses across the city, Hennessy says many students are disconnected from the communities around them. &ldquo;I live in Astoria and went to school in Brooklyn. Bronx Community College is technically in the borough, but it&rsquo;s further north, in a nicer area. Most of us just commute. We&rsquo;re not involved in the neighborhoods our schools are in.&rdquo;</span>
+    </p>
+    <p class="c6 c10">
+      <span class="c0">What would real community involvement look like? For Hennessy, it&rsquo;s simple: &ldquo;Partner with local orgs like South Bronx Unite. Organize cleanup days. Teach kids about air quality. Advocate for more trees and green space. Bring students into that work. Right now, CUNY&rsquo;s not doing that.&rdquo;</span>
+    </p>
+    <p class="c6 c10">
+      <span class="c0">Still, she sees hope in small wins&mdash;like the new YMCA in her neighborhood. &ldquo;It&rsquo;s amazing. Now kids have programs and a place to go. But not enough people know about it,&rdquo; she says. &ldquo;That&rsquo;s the thing&mdash;we don&rsquo;t just need resources. We need awareness.&rdquo;</span>
+    </p>
+    <p class="c6 c10">
+      <span class="c0">When asked what she&rsquo;d say to people in power, Hennessy doesn&rsquo;t hesitate: &ldquo;Get involved,&rdquo; she says. &ldquo;You can&rsquo;t just teach students and hope they&rsquo;ll fix things later. You have to be in the community now.&rdquo;</span>
+    </p>
+    <p class="c6 c10">
+      <span class="c0">And she sees strength in the CUNY student body. &ldquo;CUNY has 21 schools. That&rsquo;s 21 chances to make change,&rdquo; she says. &ldquo;But unless you include the community, you&rsquo;re only talking to yourselves.&rdquo;</span>
+    </p>
+        </div>
+    </div>
+</div>
+
+<div id="photoModal3" class="photo-modal">
+    <div class="photo-modal-content">
+        <span class="photo-modal-close">&times;</span>
+        <div class="modal-body">
+            <h3>Narrative 3: Alina Nodrat (Anakaren Santana)</h3>
+            
+    <p class="c2">
+      <span class="c0">Anakaren Santana is a sociology major at York College in Jamaica, Queens. She currently lives in East New York, Brooklyn, but when asked about the neighborhood she identifies with, she goes back to where she grew up: Harlem.</span>
+    </p>
+    <p class="c2">
+      <span class="c0">Growing up between Harlem and Brooklyn, Anakaren experienced the shifting landscapes of New York City firsthand. &ldquo;Even though I&rsquo;ve lived in Brooklyn for more than eight years now, it&rsquo;s not a neighborhood I really hang out in,&rdquo; she explains. &ldquo;I feel more connected to Harlem, where I grew up on 129th between Convent and St. Nick.&rdquo;</span>
+    </p>
+    <p class="c2">
+      <span class="c0">Her earliest memories are filled with simple joys: &ldquo;There was a park right by my building, and a McDonald&rsquo;s my mom used to take my sister and me to when the breakfast menu first came out. It was a big deal,&rdquo; she says with a smile. &ldquo;We&rsquo;d go rollerblading by the pier after.&rdquo;</span>
+    </p>
+    <p class="c2">
+      <span class="c0">But those places, and the neighborhood itself, have changed. &ldquo;It was the first place where I really saw gentrification happening,&rdquo; she says. &ldquo;There used to be affordable stores like Rainbow. Now there&rsquo;s a Sephora, a Whole Foods. The McDonald&rsquo;s is gone. And my building, where my grandmother still lives, used to be more diverse. Now I see more white people.&rdquo;</span>
+    </p>
+    <p class="c2">
+      <span class="c0">These shifts aren&rsquo;t just about who lives in Harlem. They&rsquo;re about who the neighborhood is being reshaped to serve. &ldquo;It feels like a place where college kids come to party now,&rdquo; she observes. &ldquo;Restaurants, bars, places we didn&rsquo;t have growing up.&rdquo;</span>
+    </p>
+    <p class="c2">
+      <span class="c0">In both Harlem and East New York, Anakaren has also noticed a different kind of inequality, one rooted in the environment. &ldquo;If you want green space, you have to go to a park. There aren&rsquo;t many trees just on the sidewalks,&rdquo; she says. &ldquo;And during the summer, we&rsquo;re always getting heat advisories and air quality alerts. My family has asthma and allergies, and the heat just makes it worse. The lack of trees and poor air all add up.&rdquo;</span>
+    </p>
+    <p class="c2">
+      <span class="c0">And inside the buildings? Things aren&rsquo;t much better. &ldquo;My grandmother&rsquo;s building has had mold issues, mice, leaks... all things that trigger respiratory problems,&rdquo; she says. &ldquo;When you combine that with the lack of green space, it just makes everything worse.&rdquo;</span>
+    </p>
+    <p class="c2">
+      <span class="c0">However, Anakaren doesn&rsquo;t dwell on the problems, she works to find solutions. While York College didn&rsquo;t have many environmental initiatives when she started, her curiosity led her to research public health and climate change. &ldquo;It started with a sociology class and a public health paper,&rdquo; she recalls. &ldquo;I realized neighborhoods dealing with poor health outcomes were the same ones most affected by climate change.&rdquo;</span>
+    </p>
+    <p class="c2">
+      <span class="c8">That realization brought her to the NYC Climate Justice Hub, where she found a broader network of like-minded students. Through the NYC </span>
+      <span class="c8">CJH</span>
+      <span class="c0">, she discovered that student activism and community-based efforts go hand in hand. &ldquo;I think it&rsquo;s both,&rdquo; she says. &ldquo;CUNY helped me find the people doing the work. And through them, I found the organizations.&rdquo;</span>
+    </p>
+    <p class="c2">
+      <span class="c0">When asked what she hopes people take from her story, Anakaren doesn&rsquo;t hesitate: &ldquo;First, for students who feel like they&rsquo;re alone, especially at a CUNY campus where there aren&rsquo;t many resources, I want them to know they&rsquo;re not. There are people who want to connect and help. Don&rsquo;t get discouraged.&rdquo; Further, she states, she hopes people start to see how climate justice connects to everything, and &ldquo;when you see a heat advisory, I want you to think about how that affects people with asthma, or families with heart problems. I want people to connect the dots.&rdquo;</span>
+    </p>
+    <p class="c2">
+      <span class="c0">If she could send a message to decision-makers? &ldquo;Do better,&rdquo; she says bluntly. &ldquo;Especially now, with people like Trump trying to cut everything. I hope leaders stop pretending to care and actually fight. Wearing a pink ribbon doesn&rsquo;t mean anything if you&rsquo;re not doing the work.&rdquo;</span>
+    </p>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Item 4 -->
+<div id="photoModal4" class="photo-modal">
+    <div class="photo-modal-content">
+        <span class="photo-modal-close">&times;</span>
+        <div class="modal-body">
+            <h3>Narrative 4: Alina Nodrat (Arnab Joseph Gomes)</h3>
+    <p class="c2">
+      <span class="c0">Arnab Joseph Gomes grew up on the invisible boundary between Woodside and Maspeth in Queens. &ldquo;It&rsquo;s a strange thing,&rdquo; he explained. &ldquo;I&#39;ve always been in between those two areas but never really felt part of both, or either one, of them.&rdquo;</span>
+    </p>
+    <p class="c2">
+      <span class="c8">That in-betweenness shaped his understanding of community, its divisions, overlaps, and the invisible lines that define where you&rsquo;re from. Woodside, to him, was more residential, with a few busy commercial hubs. Maspeth, on the other hand, still has traces of its industrial past. &ldquo;You can still see the </span>
+      <span class="c8 c14">remnants</span>
+      <span class="c0">&nbsp;of the old industry,&rdquo; he said.</span>
+    </p>
+    <p class="c2">
+      <span class="c0">Some of his earliest memories are rich in community life: festivals in local parks, arts and crafts in church basements, barbecues, and games that brought neighbors together. &ldquo;There used to be a real sense of community,&rdquo; he recalled. &ldquo;Now, the events have kind of faded, but people are still involved in different ways,&rdquo; especially through homeowners&#39; associations and local organizing.</span>
+    </p>
+    <p class="c2">
+      <span class="c0">Over the years, Maspeth has seen a quiet demographic shift. Once predominantly Irish, it now has a growing Asian American and Southeast Asian American population. &ldquo;You can feel the change, but it&rsquo;s not the kind of gentrification that pushes people out,&rdquo; Arnab said. &ldquo;A lot of the family-owned businesses are still here. There&rsquo;s this bar-diner in Sunnyside that looks like a fire station, it&rsquo;s still going strong.&rdquo;</span>
+    </p>
+    <p class="c2">
+      <span class="c0">Still, change hasn&rsquo;t always come gently.</span>
+    </p>
+    <p class="c2">
+      <span class="c8">In Woodside, he remembers a small triangular park where the community once gathered. &ldquo;It had vegetation, trees, it was a gathering spot,&rdquo; he said. But the park was paved over, likely to make it easier to maintain and discourage unhoused people from sleeping there. &ldquo;T</span>
+      <span class="c8 c14">hey just put concrete all over it</span>
+      <span class="c0">&nbsp;at the cost of green space.&rdquo;</span>
+    </p>
+    <p class="c2">
+      <span class="c0">And as climate change continues to reshape urban life, his community is feeling the effects. Heavy rains are more common now, and the neighborhood&rsquo;s infrastructure hasn&rsquo;t kept up. &ldquo;We&rsquo;ve been dealing with basement flooding for years, since around 2015,&rdquo; he said. Arnab states that the houses in his neighborhood were never designed for that kind of weather. And the sewer systems? They&rsquo;re completely outdated. A whole row of townhouses might be sharing one pipe. Eventually, Arnab and other members of his homeowners association tried to go through official channels, calling 311, reaching out to assembly members and contractors, but they felt dismissed, even discriminated against. Arnab said his community wanted something sustainable, something official&ndash; not just a patch job.</span>
+    </p>
+    <p class="c2">
+      <span class="c0">Before joining the NYC Climate Justice Hub, Arnab admitted he hadn&rsquo;t heard of climate or environmental justice. But his coursework in anthropology and social science changed that. &ldquo;Those classes have changed how I think about how people band together,&rdquo; he said. &ldquo;They taught me to ask the right questions.&rdquo;</span>
+    </p>
+    <p class="c2">
+      <span class="c0">He emphasizes that climate work doesn&rsquo;t have to start with joining a big movement or a polished campaign. &ldquo;Sometimes it&rsquo;s just showing up. Sometimes politicians don&rsquo;t show up, which angers a lot of people in my community.&rdquo; Arnab realized that meaningful and impactful change comes from community members themselves. For example, in his neighborhood(s), climate activism is led by everyday people. Many of his neighbors didn&rsquo;t attend college, choosing to work and support families instead. &ldquo;So, activism here looks different,&rdquo; he explained. &ldquo;It&rsquo;s about drainage issues. It&rsquo;s about getting a road repaired. It&rsquo;s about making sure the right people are at the community board meetings.&rdquo;</span>
+    </p>
+    <p class="c2">
+      <span class="c0">When he thinks about the future, he wants to see more investment in young people. Arnab states that those who will be the most affected by climate change are the youth as they will have to live with the consequences of what we do now. &ldquo;Extra funding in a certain community or district can dictate where they [the children] will end up in the next 20 years or so.&rdquo; He knows there&rsquo;s no single solution. &ldquo;It&rsquo;s a big matrix,&rdquo; he said. Therefore, Arnab suggests that looking at the intersection of infrastructure, education, and community support will lead to climate justice change.</span>
+    </p>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Item 5 (New) -->
+<div id="photoModal5" class="photo-modal">
+    <div class="photo-modal-content">
+        <span class="photo-modal-close">&times;</span>
+        <div class="modal-body">
+            <h3>Narrative 5: Janggo Mahmud (Angela Zhou)</h3>
+    <p class="c3">
+      <span class="c0">Angela Zhao is a graduate student at CUNY City College, studying Sustainability in the Urban Environment. Raised in Sunset Park, Brooklyn, Angela&rsquo;s narrative is rooted in learning indigenous intergenerational knowledge, building community ties, and understanding the complexities of coalition building. </span>
+    </p>
+    <p class="c1">
+      <span class="c0"></span>
+    </p>
+    <p class="c3">
+      <span class="c0">Angela complements her data literacy skills with racial equity and social justice at her role at UPROSE as a NYC Climate Justice Hub Fellow. She now analyzes the neighborhood that shaped her earliest memories- such as those at her mother&rsquo;s lingerie shop, a BIWOC women owned family business often visited by family, friends and also trusting eager customers.&ldquo;I didn&rsquo;t know what their sizing was, I was like ten years old&rdquo; Angela recalls questions she was fielded. </span>
+    </p>
+    <p class="c1">
+      <span class="c0"></span>
+    </p>
+    <p class="c3">
+      <span class="c0">The shop, once owned by her mother and later passed to her aunt, was more than a storefront. It was a public space for women and also for speaking a shared language (Cantonese but also Mandarin and more recently, Fujianese). Though the business has since shifted to selling baby formula and other childcare essentials, Angela sees the space as an early lesson in the subtle power of local infrastructure and of course, BIWOC support- parallel to UPROSE&rsquo;s own leadership. </span>
+    </p>
+    <p class="c1">
+      <span class="c0"></span>
+    </p>
+    <p class="c3">
+      <span class="c0">This understanding has only deepened through her work at UPROSE. Angela first learned about the organization when she participated in their inaugural Rooted in New York: Native Plants &amp; Green Infrastructure workshop, led by Urban Ecosystem Educator Russell Rovira. She learned how to cultivate ecosystems without importing invasive species, and how green spaces can take care of themselves and their communities. Shortly after, she applied for and joined UPROSE as a NYC Climate Justice Hub Fellow - fortifying the impact of hyperlocal community events as a bridge to build memberships, capacity building, and honing leadership. </span>
+    </p>
+    <p class="c1">
+      <span class="c0"></span>
+    </p>
+    <p class="c3">
+      <span class="c0">Although Angela emphasizes she didn&rsquo;t grow up around gardens or ample green space- &ldquo;we didn&rsquo;t have land; we lived in a small apartment.&rdquo; Yet, she has come to see how immigrant families carry sustainability with them, whether or not they name it as such. &ldquo;I think about the Chinese aunties and grandmas in Sunset Park, planting lettuce in old soy sauce jugs,&rdquo; she says. Yet Angela also reminds us to reckon with the realities of urban life that may not be best to practice indigenous cultivating knowledge. &ldquo;We can&rsquo;t just copy and paste these traditional practices into man made environments that still have things like lead in the soil,&rdquo; she notes before stressing community education is essential, thus the importance of the workshops UPROSE organizes that first introduced her to hyperlocal organizing. </span>
+    </p>
+    <p class="c1">
+      <span class="c0"></span>
+    </p>
+    <p class="c3">
+      <span class="c0">Her work at UPROSE&rsquo;s Sunset Park Greening Initiative is a direct response to layered concerns she observed. She&rsquo;s studying and contributing to a tree canopy analysis&mdash;addressing the heat, pollution, and inequity she grew up experiencing. As a child, she remembers the sweltering walks by Lief Erikson Park, not realizing at the time how much the Gowanus and Prospect Park Expressways&mdash;exacerbated with a lack of vegetation&mdash;were shaping her environment. What was her normal Angela now understands as an inequity as people in wealthier, whiter parts of the community, including neighborhoods wealthy real estate developers rebrand such as Greenwood Heights, don&rsquo;t live with those same issues and burdens.</span>
+    </p>
+    <p class="c1">
+      <span class="c0"></span>
+    </p>
+    <p class="c3">
+      <span class="c0">Angela describes how development in Sunset Park is accelerating gentrification and displacement. She describes a disparity that is becoming a pattern across New York City&rsquo;s rapidly changing neighborhoods. As an organizer distributing UPROSE flyers for their Just Transition Worker Resource Center outside the 36th Street subway stop, she noticed one end of the station exits towards the avenue are folks on their way to Industry City (a controversial rezoning project from 2015 that is known to have supercharged gentrification in Sunset Park) for overpriced cocktails and Asian cuisine while the other end are working class folks. Angela notes the extractive mindset of developers highlighting &lsquo;ethnic food&rsquo; and &lsquo;authentic culture,&rsquo; for New Yorkers to experience in a segregated chic hub while neglecting to engage with the real issues facing the community. Regarding a classic talking point of how development creates jobs, Angela remarks Industry City&rsquo;s service jobs don&rsquo;t offer what developers would promise. Usually because they lack worker resource centers, pathways for upward mobility, or well paying unionized jobs that help support existing manufacturing activity there with a climate and coastal resilience lens. </span>
+    </p>
+    <p class="c1">
+      <span class="c0"></span>
+    </p>
+    <p class="c3">
+      <span class="c0">Reflecting on how a few avenues can separate worlds, Angela recognizes how these micro-geographies reveal welfare consequences. While New York City is often renowned as a multicultural hub, she observes that in practice, neighborhoods are deeply divided- often along ethnic, linguistic, and class lines. These divisions can inhibit the kind of cross-community solidarity that environmental and social justice movements urgently require. Therefore Angela is quick to stress that environmental justice is inseparable from immigrant justice, racial justice, and housing justice. To meet the climate crisis, organizers must also confront the echo chambers we might find ourselves in so we can build coalitions that span language, class, and cultural differences. Angela found the affirming experience to hone her leadership skills to work towards coalition building in an Environmental Justice course offered through the Colin Powell School for Civic and Global Leadership. Unlike the sterile, top-down nature of much academic work, this class emphasized community-based research and organizing. The course flipped Angela&rsquo;s understanding of power- no longer viewing her role to be subjected to higher authority of expertise, but rather as a facilitator of knowledge that already exists within communities.</span>
+    </p>
+    <p class="c1">
+      <span class="c0"></span>
+    </p>
+    <p class="c3">
+      <span class="c8">Through her work at the UPROSE, CUNY, and beyond, she&rsquo;s galvanized by bottom-up organizing- community education events and actions that start with the people most affected. &ldquo;</span>
+      <span class="c8 c11">What can I do as someone with this degree that is a resource and a tool to help someone who doesn&rsquo;t have that time or access</span>
+      <span class="c8">? </span>
+      <span class="c8 c11">It&rsquo;s about using what I have to uplift what they </span>
+      <span class="c8">[communities] </span>
+      <span class="c8 c11">already know</span>
+      <span class="c0">.&rdquo; This bottom-up ethic defines Angela&rsquo;s climate organizing approach&mdash;one that eschews extractive storytelling and instead centers listening, empowerment, and solidarity.</span>
+    </p>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Item 6 (New) -->
+<div id="photoModal6" class="photo-modal">
+    <div class="photo-modal-content">
+        <span class="photo-modal-close">&times;</span>
+        <div class="modal-body">
+            <h3>Narrative 6: Jenna Salem (Alex Arturo)</h3>
+    <p class="c3">
+      <span class="c0">Narrative: Community Care and Quiet Resistance in Maria Hernandez</span>
+    </p>
+    <p class="c1">
+      <span class="c0"></span>
+    </p>
+    <p class="c3">
+      <span class="c0">Alex currently lives in Ridgewood, Queens, but it&rsquo;s the streets surrounding Maria Hernandez Park in Bushwick that feel most like home. As a CUNY student and community organizer at El Puente, Alex connects her lived experience with climate justice, immigrant identity, and collective care.</span>
+    </p>
+    <p class="c1">
+      <span class="c0"></span>
+    </p>
+    <p class="c3">
+      <span class="c0">Her earliest memories of Bushwick are tied to language and belonging. &ldquo;When I first arrived, it felt beautiful,&rdquo; she recalls. &ldquo;There was a strong migrant presence, you could walk into the grocery store and speak Spanish.&rdquo; Learning that the park was named after Maria Hernandez, a Puerto Riccan &nbsp;activist who fought against displacement, deepened her connection. &ldquo;It felt like a place where different cultures met,&rdquo; she says. &ldquo;Now, there&rsquo;s a big Ecuadorian community, and because I grew up in Ecuador, it feels like home.&rdquo;</span>
+    </p>
+    <p class="c1">
+      <span class="c0"></span>
+    </p>
+    <p class="c3">
+      <span class="c0">Alex has witnessed Bushwick change rapidly in the past five years. &ldquo;When we got here, there weren&rsquo;t so many students or cafes,&rdquo; she notes. &ldquo;Now, it feels like a lot of people have moved in, but the park has also become a space of encounter again, especially since COVID.&rdquo; During the pandemic, Maria Hernandez Park turned into a lively hub: Latinx neighbors playing volleyball, DJ collectives like Public Service throwing events, and Ecuadorian vendors selling street food. &ldquo;The infrastructure has been created by the people,&rdquo; she says. &ldquo;It&rsquo;s community-based, not city-planned.&rdquo;</span>
+    </p>
+    <p class="c1">
+      <span class="c0"></span>
+    </p>
+    <p class="c3">
+      <span class="c0">But even as the park thrives, Alex sees the environmental injustice surrounding it, especially in nearby Williamsburg, where she works. El Puente&rsquo;s building sits at the toxic crossroads of the BQE, surrounded by highways that pollute the air and create intense noise. &ldquo;The asthma rates are high. The air is bad. It&rsquo;s loud,&rdquo; she explains. &ldquo;Even the trees feel like they&rsquo;re trying to breathe.&rdquo;</span>
+    </p>
+    <p class="c1">
+      <span class="c0"></span>
+    </p>
+    <p class="c3">
+      <span class="c0">One source of strength has been the Sunset Garden, a queer-run community space in Ridgewood. &ldquo;Gardening is resistance,&rdquo; Alex says. &ldquo;It&rsquo;s about food, green space, healing, and joy, especially for people pushed to the margins.&rdquo; Yet even this space faces pushback. &ldquo;They&rsquo;re being harassed. It shows how city structures are still racist, still homophobic.&rdquo;</span>
+    </p>
+    <p class="c1">
+      <span class="c0"></span>
+    </p>
+    <p class="c3">
+      <span class="c0">The fight is made harder by recent federal funding cuts. A major grant promised under the previous administration was rescinded, and El Puente is now facing layoffs and reduced programming. &ldquo;It&rsquo;s heartbreaking,&rdquo; Alex says. &ldquo;These are our friends, our neighbors. And it&rsquo;s the kids who will feel it most.&rdquo;</span>
+    </p>
+    <p class="c1">
+      <span class="c0"></span>
+    </p>
+    <p class="c3">
+      <span class="c0">Her CUNY education has helped sharpen her understanding of how deeply climate justice intersects with racial and immigrant justice. She references the 1991 First People of Color Environmental Leadership Summit as a moment that helped her understand the roots of her work. &ldquo;Environmental oppression doesn&rsquo;t exist in a vacuum, it&rsquo;s shaped by zoning, by segregation, by who gets heard and who doesn&rsquo;t.&rdquo;</span>
+    </p>
+    <p class="c1">
+      <span class="c0"></span>
+    </p>
+    <p class="c3">
+      <span class="c0">When asked what she wants decision-makers to know, Alex doesn&rsquo;t hesitate. &ldquo;They&rsquo;re not the ones who should be making the decisions,&rdquo; she says. &ldquo;Go to the people. Learn the histories of these places. Understand what organizations like El Puente have been doing for decades.&rdquo;</span>
+    </p>
+    <p class="c1">
+      <span class="c0"></span>
+    </p>
+    <p class="c3">
+      <span class="c0">And perhaps most importantly, she adds, we need to redefine value. &ldquo;It&rsquo;s not about profit. It&rsquo;s about care, about who gets to rest, to breathe, to grow.&rdquo;</span>
+    </p>
+    <p class="c1">
+      <span class="c0"></span>
+    </p>
+    <p class="c3">
+      <span class="c0">Even on heavy days, Alex finds hope in community. &ldquo;People still come together,&rdquo; she says. &ldquo;That&rsquo;s where I find strength.&rdquo;</span>
+      <span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 271.74px; height: 362.92px;">
+        <img alt="" src="https://centerforthehumanities.org/wp-content/uploads/2025/12/unnamed.png" style="width: 271.74px; height: 362.92px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);" title="">
+      </span>
+    </p>
+    <p class="c3">
+      <span class="c0">@freindsofsunsetgarden - Instagram of the garden </span>
+    </p>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Item 7 (New) -->
+<div id="photoModal7" class="photo-modal">
+    <div class="photo-modal-content">
+        <span class="photo-modal-close">&times;</span>
+        <div class="modal-body">
+            <h3>Narrative 7: Jenna Salem (Vladimir Prikhodko)</h3>
+    <p class="c6">
+      <span class="c0">Narrative: Quiet Shifts and Tree-Lined Lessons in Ridgewood (Vlad)</span>
+    </p>
+    <p class="c6">
+      <span class="c0">Vlad moved to Ridgewood, Queens three years ago after a whirlwind first year in New York City, during which he relocated five times. Originally from Russia, he arrived in the U.S. eight years ago, and despite being relatively new to the neighborhood, Ridgewood has since become his grounding place, both as a student and as a resident observing the city&#39;s shifting environment and housing landscape.</span>
+    </p>
+    <p class="c6">
+      <span class="c0">His earliest memory of Ridgewood isn&rsquo;t tied to a quiet street or familiar block, but to necessity. &ldquo;It was an emergency move,&rdquo; he shares. &ldquo;A friend found me a place, and I took it. I had just started college.&rdquo; For Vlad, Ridgewood became a welcome contrast to the instability of his first year in the U.S.</span>
+    </p>
+    <p class="c6">
+      <span class="c0">Over the past three years, he&rsquo;s witnessed subtle but telling shifts. &ldquo;There are more &lsquo;bougie&rsquo; places now, bars with jazz, trendy shops, fancy pizza places. The thrift store on my block, where you could buy things for a dollar, shut down.&rdquo; The gentrification isn&rsquo;t drastic, but it&rsquo;s visible. &ldquo;You start to notice who&rsquo;s moving in. There used to be mostly older folks, but now it&rsquo;s younger people, more diversity.&rdquo;</span>
+    </p>
+    <p class="c6">
+      <span class="c0">Still, compared to nearby neighborhoods like Bushwick, Vlad notes that Ridgewood is relatively stable, environmentally and socially. &ldquo;There are lots of trees here. The air quality&rsquo;s good. I checked the city data for a class, and it&rsquo;s surprisingly fine. There&rsquo;s even a forest park 30 minutes away.&rdquo; Unlike areas plagued by flooding or heat vulnerability, Ridgewood&rsquo;s slight elevation and green cover offer some protection. &ldquo;It&rsquo;s not perfect,&rdquo; he adds, &ldquo;but it&rsquo;s livable.&rdquo;</span>
+    </p>
+    <p class="c6">
+      <span class="c0">One concern that sticks with him is the disconnect between the rise of so-called &ldquo;affordable housing&rdquo; and what affordability actually means. &ldquo;There&rsquo;s a high-rise that&rsquo;s been under construction for six years. Two workers died there. They advertise affordable units but they start at $2,500 for a studio,&rdquo; he says, shaking his head. &ldquo;That&rsquo;s not affordable. That&rsquo;s not for the people who already live here.&rdquo;</span>
+    </p>
+    <p class="c6">
+      <span class="c0">Through his classes and fellowship work, Vlad has started to notice things differently. &ldquo;I&rsquo;ve become more observant, of trees, green spaces, and who plants them.&rdquo; He notes that Ridgewood has a high rate of homeownership, and surprisingly, many of the neighborhood&rsquo;s trees were planted not by the city, but by homeowners. &ldquo;There&rsquo;s something special in that, in people taking care of their own blocks.&rdquo;</span>
+    </p>
+    <p class="c6">
+      <span class="c0">He&rsquo;s also noticed how CUNY students, sometimes unintentionally, become part of Ridgewood&rsquo;s evolving dynamic. &ldquo;Some alumni go into tenant organizing. There&rsquo;s a tenant union here led by someone from Hunter. So yeah, students do shape the neighborhood, even if they don&rsquo;t always realize it.&rdquo;</span>
+    </p>
+    <p class="c6">
+      <span class="c0">When asked what he hopes people take from his story, Vlad doesn&rsquo;t romanticize. &ldquo;I don&rsquo;t have a dramatic story,&rdquo; he says plainly. &ldquo;But I think people should just notice what&rsquo;s around them. Trees, clean air, don&rsquo;t take that for granted.&rdquo; His message to policymakers is just as direct: &ldquo;We need more affordable housing. Like, truly affordable. It&rsquo;s getting out of hand.&rdquo;</span>
+    </p>
+    <p class="c6">
+      <span class="c0">In a city that often celebrates transformation without acknowledging who gets left behind, Vlad&rsquo;s quiet reflections serve as a reminder: not every story is one of crisis, but every neighborhood deserves to be heard before it reaches that point.</span>
+    </p>
+        </div>
+    </div>
+</div>
+
+</div> 
+
+<script>
+    (function() {
+
+        // Check if this script has already run to avoid double-binding
+        if (window.wpCustomGrid123Loaded) {
+            return;
+        }
+        window.wpCustomGrid123Loaded = true;
+
+        function initCustomGrid() {
+            
+            // --- MODAL SCRIPT ---
+            const gridWrapper = document.getElementById('wp-custom-grid-123');
+            
+            if (!gridWrapper) {
+                return;
+            }
+
+            // Select all modal triggers
+            const modalTriggers = gridWrapper.querySelectorAll('[data-modal-target]');
+            
+            // Select all close buttons (Updated for 7 modals)
+            const closeButtons = document.querySelectorAll('#photoModal1 .photo-modal-close, #photoModal2 .photo-modal-close, #photoModal3 .photo-modal-close, #photoModal4 .photo-modal-close, #photoModal5 .photo-modal-close, #photoModal6 .photo-modal-close, #photoModal7 .photo-modal-close');
+            // Select all modals (Updated for 7 modals)
+            const allModals = document.querySelectorAll('#photoModal1, #photoModal2, #photoModal3, #photoModal4, #photoModal5, #photoModal6, #photoModal7');
+            const htmlEl = document.documentElement;
+
+            modalTriggers.forEach(trigger => {
+                trigger.addEventListener('click', () => {
+                    const modalId = trigger.getAttribute('data-modal-target');
+                    // We must select the modal by its ID globally
+                    const modal = document.querySelector(modalId); 
+                    if (modal) {
+                        modal.style.display = 'flex';
+                        htmlEl.classList.add('modal-open'); 
+                        document.body.classList.add('modal-open');
+                    }
+                });
+            });
+
+            function closeModal(modal) {
+                if (!modal) return;
+                const modalContent = modal.querySelector('.photo-modal-content');
+                if (modalContent) {
+                    modalContent.classList.add('modal-closing');
+                }
+
+                // Match the duration of the CSS animation
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                    if (modalContent) {
+                        modalContent.classList.remove('modal-closing');
+                    }
+                    // Only remove modal-open class if no other modals are open
+                    const anyModalOpen = Array.from(allModals).some(m => m.style.display === 'flex');
+                    if (!anyModalOpen) {
+                        htmlEl.classList.remove('modal-open');
+                        document.body.classList.remove('modal-open');
+                    }
+                    
+                }, 100); // Animation duration is 0.1s
+            }
+
+            closeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const modal = button.closest('.photo-modal');
+                    if (modal) {
+                        closeModal(modal);
+                    }
+                });
+            });
+
+            // Add click-off-to-close functionality for all modals
+            allModals.forEach(modal => {
+                modal.addEventListener('click', (event) => {
+                    // We check if the click was on the dark background (.photo-modal) 
+                    if (event.target === modal) {
+                        closeModal(modal);
+                    }
+                });
+            });
+
+        }
+
+        // Run the script on DOMContentLoaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initCustomGrid);
+        } else {
+            // DOM is already ready
+            initCustomGrid();
+        }
+
+    })(); 
+</script>

@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYC Climate Justice Hub Resource Library</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --c-brand-green: #2E6B24;
+            --c-brand-lime: #6BFA53;
+            --c-brand-blue: #4648F3;
+            --c-brand-sky: #E1F5FA;
+            --c-black: #000000;
+            --c-white: #FFFFFF;
+            --c-gray-100: #f8f9fa;
+            --c-gray-200: #e9ecef;
+            --c-gray-500: #adb5bd;
+            --c-gray-700: #495057;
+
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: Georgia, "Times New Roman", Times, serif;
+        }
+        .filter-group-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out;
+        }
+        .filter-group-content.open {
+            max-height: 1000px; /* Adjust as needed */
+        }
+        
+        .filter-accordion-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 1rem;
+        }
+
+        .filter-accordion-toggle::after {
+            content: '▼';
+            transition: transform 0.3s;
+            font-size: 0.9em;
+        }
+        .filter-accordion-toggle.open::after {
+            transform: rotate(180deg);
+        }
+
+        /* Adapted Search Bar Styles */
+        .search-bar {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        .search-input {
+            width: 100%;
+            padding: 1.25rem 3rem 1.25rem 1.5rem;
+            font-size: 1.125rem;
+            border: 1px solid var(--c-gray-200);
+            border-radius: var(--radius-md);
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            /*-webkit-appearance: none;*/
+        }
+        .search-input:focus {
+            border-color: var(--c-brand-blue);
+            box-shadow: 0 0 0 3px rgba(70, 72, 243, 0.2);
+        }
+        .search-input::placeholder {
+            color: var(--c-gray-500);
+        }
+        .search-icon {
+            position: absolute;
+            right: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--c-gray-500);
+            pointer-events: none;
+        }
+
+        /* Adapted Filter Tag Styles */
+        .filter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: center;
+        }
+        .filter-tag {
+            background-color: var(--c-brand-lime);
+            color: var(--c-black);
+            padding: 0.375rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .filter-tag .remove {
+            cursor: pointer;
+            background: var(--c-brand-green);
+            color: var(--c-white);
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            line-height: 1;
+            transition: background-color 0.2s ease;
+        }
+        .filter-tag .remove:hover {
+            background-color: var(--c-black);
+        }
+        .clear-filters {
+            background: transparent;
+            color: var(--c-brand-blue);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            margin-left: auto;
+        }
+        .clear-filters:hover {
+            background-color: var(--c-brand-sky);
+        }
+
+
+        /* Card styles */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .resource-card {
+            background: var(--c-white);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--c-gray-200);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .resource-image {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            border-bottom: 1px solid var(--c-gray-200);
+        }
+
+        .resource-image.default-bg {
+            background: var(--c-gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: var(--c-gray-500);
+        }
+
+        .resource-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .resource-category {
+            background: var(--c-gray-100);
+            color: var(--c-gray-700);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            align-self: flex-start;
+        }
+
+        .resource-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--c-black);
+            line-height: 1.4;
+        }
+
+        .resource-description {
+            color: var(--c-gray-700);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+
+        .resource-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            min-height: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .resource-tag {
+            background: var(--c-brand-lime);
+            color: var(--c-black);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .resource-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--c-gray-500);
+            margin-top: auto;
+            border-top: 1px solid var(--c-gray-200);
+            padding-top: 1rem;
+        }
+
+        .resource-date {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--c-brand-green); 
+        }
+
+        .resource-type {
+            background: var(--c-gray-700);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            font-size: 0.75rem;
+        }
+
+        #resource-library-wrapper .filter-group-box {
+            border: 1px solid #e9ecef;
+            border-radius: 0.5rem;
+            padding: 0;
+        }
+
+        .filter-group-content label {
+            font-size: 0.9rem; /* Increased from text-xs */
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div id="resource-library-wrapper" class="max-w-[1800px] mx-auto px-4 py-6 md:py-8">
+
+        <header class="text-center mb-6 md:mb-8">
+            <img src="https://centerforthehumanities.org/wp-content/uploads/2024/06/light-green-logo.png" alt="NYC Climate Justice Hub Logo" class="mx-auto h-20 mb-4">
+            <h1 class="text-3xl md:text-4xl font-bold" style="font-family: serif; color: white;">Resource Library</h1>
+            <p class="mt-2 text-base max-w-3xl mx-auto" style="color: white;">An inventory of environmental and climate justice resources  produced by the Hub community.</p>
+        </header>
+
+        <!-- Search & Filters Section -->
+        <div class="bg-white p-4 rounded-lg shadow-sm mb-6 border border-gray-200">
+            <div class="search-bar">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search by keyword, topic, campus...">
+                <span class="search-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
+                    </svg>
+                </span>
+            </div>
+            <div id="filtersContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 items-start">
+                <!-- Filter groups will be injected here by JS -->
+            </div>
+            <div id="selectedFiltersContainer" class="filter-tags hidden mt-4">
+                 <!-- Selected filter tags will be injected here -->
+                 <button id="clearAllBtn" class="clear-filters" style="display: none;">Clear All</button>
+            </div>
+        </div>
+        
+        <main>
+            <div class="flex justify-end items-center mb-4 relative">
+                <span class="text-base font-medium mr-1" style="color: white;">Sort by:</span>
+                <div class="relative">
+                    <button id="sortDropdownButton" class="filter-accordion-toggle bg-white border border-gray-300 rounded-md px-2 py-1 text-sm font-semibold text-gray-700 inline-flex items-center justify-between w-48">
+                        <span id="sortDropdownLabel">Date (Newest)</span>
+                    </button>
+                    <div id="sortDropdownContent" class="hidden absolute right-0 mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10 top-full">
+                        <div class="p-2 space-y-1">
+                            <label class="flex items-center space-x-2 cursor-pointer text-xs p-1 rounded hover:bg-gray-100">
+                                <input type="radio" name="sort" class="sort-radio" value="date-desc" checked>
+                                <span>Date (Newest)</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer text-xs p-1 rounded hover:bg-gray-100">
+                                <input type="radio" name="sort" class="sort-radio" value="date-asc">
+                                <span>Date (Oldest)</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer text-xs p-1 rounded hover:bg-gray-100">
+                                <input type="radio" name="sort" class="sort-radio" value="title-asc">
+                                <span>Title (A-Z)</span>
+                            </label>
+                             <label class="flex items-center space-x-2 cursor-pointer text-xs p-1 rounded hover:bg-gray-100">
+                                <input type="radio" name="sort" class="sort-radio" value="title-desc">
+                                <span>Title (Z-A)</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="resourcesGrid" class="results-grid"></div>
+            <div id="noResultsMessage" class="hidden text-center py-12">
+                <h3 class="text-xl font-semibold text-gray-700">No Resources Found</h3>
+                <p class="mt-1 text-sm text-gray-500">Try adjusting your search or filter criteria.</p>
+            </div>
+        </main>
+
+    </div>
+
+    <script>
+        const resources = [
+            {
+                fileType: 'PDF', date: 'May 29, 2025', title: 'We Stay/Nos Quedamos Youth Curriculum Overview',
+                subtext: 'A summary of creative modules and lesson plans for exploring the history of the South Bronx.',
+                thumbnail: 'https://centerforthehumanities.org/wp-content/uploads/2025/10/We-Stay-Nos-Quedamos-Youth-Curriculum-Overview.png',
+                link: 'https://drive.google.com/file/d/19Up4ibxwXdXP1CUfjO8-c75P9iGgVuCO/view?usp=drive_link',
+                tags: {
+                    campus: ['City College of New York (CCNY)', 'Lehman College'], org: ['We Stay/Nos Quedamos'],
+                    topic: ['Education', 'Social Justice'], type: ['Slide Deck'], workstream: ['Research Teams']
+                }
+            },
+            {
+                fileType: 'PNG', date: 'October 2, 2025', title: 'We Stay/Nos Quedamos Youth Curriculum Theory of Change',
+                subtext: 'Lessons learned from We Stay/Nos Quedamos Youth and Community program to inform environmental justice programming in the South Bronx and elsewhere.',
+                thumbnail: 'https://centerforthehumanities.org/wp-content/uploads/2025/10/We-Stay-Nos-Quedamos-Youth-Curriculum-Theory-of-Change.png',
+                link: 'https://drive.google.com/file/d/1JY9UtXb2E2ejrk8-skSh1pHQmhwAoSk7/view?usp=drive_link',
+                tags: { campus: [], org: ['We Stay/Nos Quedamos'], topic: ['Education', 'Social Justice'], type: ['Image'], workstream: ['General'] }
+            },
+            {
+                fileType: 'PDF', date: 'February 25, 2025', title: 'Community Energy Cell',
+                subtext: 'Scientific poster presented for the Smart Grid Interdependencies Laboratory in collaboration with The Point CDC.',
+                thumbnail: 'https://centerforthehumanities.org/wp-content/uploads/2025/10/Community-Energy-Cell.png',
+                link: 'https://drive.google.com/file/d/1HJN5DzUTZGaAd-GpUNPnVzFz8YnEOJGi/view?usp=drive_link',
+                tags: {
+                    campus: ['City College of New York (CCNY)'], org: ['The Point CDC'],
+                    topic: ['Air Quality', 'Education', 'Land Use', 'Social Justice', 'Technology', 'Transportation'],
+                    type: ['Poster'], workstream: ['General']
+                }
+            },
+            {
+                fileType: 'PDF', date: 'February 25, 2025', title: 'Hunts Point Community-Led Clean Energy Infrastructure',
+                subtext: 'Scientific poster presented at CUNY Climate Justice Summit by the NYC Climate Justice Hub Research Team for The Point CDC.',
+                thumbnail: 'https://centerforthehumanities.org/wp-content/uploads/2025/10/Hunts-Point-Community.png',
+                link: 'https://drive.google.com/file/d/1fyQHrESpsSTfTOrKN2_ESRYI3z-dxlWo/view?usp=drive_link',
+                tags: {
+                    campus: ['City College of New York (CCNY)'], org: ['The Point CDC'],
+                    topic: ['Air Quality', 'Education', 'Land Use', 'Social Justice', 'Technology', 'Transportation'],
+                    type: ['Poster'], workstream: ['Research Teams']
+                }
+            },
+            {
+                fileType: 'PDF', date: 'February 25, 2025', title: 'Williamsburg Mobility Study',
+                subtext: 'Scientific poster presented at CUNY Climate Justice Summit by the NYC Climate Justice Hub Research Team for El Puente.',
+                thumbnail: 'https://centerforthehumanities.org/wp-content/uploads/2025/10/Williamsburg-Mobility-Study.png',
+                link: 'https://drive.google.com/file/d/1csD7jezCABCEFeZvJvLysWcEbuE1fdac/view?usp=drive_link',
+                tags: {
+                    campus: ['Baruch College', 'City College of New York (CCNY)', 'Queens College', 'Hunter College'],
+                    org: ['El Puente'], topic: ['Air Quality', 'Land Use', 'Social Justice', 'Transportation'],
+                    type: ['Poster'], workstream: ['Research Teams']
+                }
+            },
+            {
+                fileType: 'PDF', date: 'February 25, 2025', title: 'Environmental Justice, Climate Justice, and Waterfront Resiliency in the Lower East Side (LES)',
+                subtext: 'Scientific poster presented at CUNY Climate Justice Summit by the NYC Climate Justice Hub Research Team for Good Old Lower East Side (GOLES).',
+                thumbnail: 'https://centerforthehumanities.org/wp-content/uploads/2025/10/Environmental-Justice-Climate-Justice-and-Waterfront.png',
+                link: 'https://drive.google.com/file/d/1XK1JLxOTHePiIKAjaDe73eenr-VHvoS-/view?usp=drive_link',
+                tags: {
+                    campus: ['Brooklyn College', 'City College of New York (CCNY)'], org: ['GOLES'],
+                    topic: ['Flooding', 'Land Use', 'Social Justice'], type: ['Poster'], workstream: ['Research Teams']
+                }
+            },
+            {
+                fileType: 'PDF', date: 'February 25, 2025', title: 'South Bronx Environmental & Housing Justice Youth Curriculum',
+                subtext: 'Scientific poster presented at CUNY Climate Justice Summit by the NYC Climate Justice Hub Research Team for Nos Quedamos.',
+                thumbnail: 'https://centerforthehumanities.org/wp-content/uploads/2025/10/South-Bronx-Environmental.png',
+                link: 'https://drive.google.com/file/d/1kZmI8e2_qVFvZgW9ySrpIE26iUp8beDJ/view?usp=drive_link',
+                tags: {
+                    campus: ['City College of New York (CCNY)', 'Lehman College'], org: ['We Stay/Nos Quedamos'],
+                    topic: ['Education'], type: ['Poster'], workstream: ['Research Teams']
+                }
+            },
+            {
+                fileType: 'PDF', date: 'February 25, 2025', title: 'An Analysis of Sunset Park Land Use, in Support of UPROSE\'s GRID 2.0',
+                subtext: 'Scientific poster presented at CUNY Climate Justice Summit by the NYC Climate Justice Hub Research Team for UPROSE.',
+                thumbnail: 'https://centerforthehumanities.org/wp-content/uploads/2025/10/An-Analysis-of-Sunset-Park.png',
+                link: 'https://drive.google.com/file/d/1LzvlKC4s6SGPSzNgpJeaByETNrbWN3-p/view?usp=drive_link',
+                tags: {
+                    campus: ['Lehman College'], org: ['UPROSE'], topic: ['Food Justice', 'Green Space', 'Land Use'],
+                    type: ['Poster'], workstream: ['Research Teams']
+                }
+            },
+            {
+                fileType: 'PDF', date: 'February 25, 2025', title: 'BroSis 1K Composting Systems Initiative for NYC',
+                subtext: 'Scientific poster presented at CUNY Climate Justice Summit by the NYC Climate Justice Hub Research Team for the Brotherhood Sister Sol.',
+                thumbnail: 'https://centerforthehumanities.org/wp-content/uploads/2025/10/BroSis-1K-Composting-Systems.png',
+                link: 'https://drive.google.com/file/d/1RjrffayBQqclW-pEexvmcOcPxjxR9VKR/view?usp=drive_link',
+                tags: {
+                    campus: ['CUNY Graduate School of Public Health and Health Policy'], org: ['BroSis'],
+                    topic: ['Food Justice', 'Waste'], type: ['Poster'], workstream: ['Research Teams']
+                }
+            },
+            {
+                fileType: 'PDF', date: 'February 25, 2025', title: 'Neighborhood Narratives: Oral Histories of CUNY Students',
+                subtext: 'Project poster presented at CUNY Climate Justice Summit by the NYC Climate Justice Hub Fellows.',
+                thumbnail: 'https://centerforthehumanities.org/wp-content/uploads/2025/10/Neighborhood-Narratives.png',
+                link: 'https://drive.google.com/file/d/1fxjqHwoKGHw07ncnqo4mT_-Qp8HXG4iY/view?usp=drive_link',
+                tags: {
+                    campus: ['Baruch College', 'City College of New York (CCNY)', 'Hunter College', 'Queens College'],
+                    org: [], topic: ['Community'], type: ['Poster'], workstream: ['Climate Justice Fellowship & Academy']
+                }
+            },
+            {
+                fileType: 'PDF', date: 'February 25, 2025', title: 'Air Quality Across CUNY',
+                subtext: 'Project poster presented at CUNY Climate Justice Summit by the NYC Climate Justice Hub Fellows.',
+                thumbnail: 'https://centerforthehumanities.org/wp-content/uploads/2025/10/Air-Quality-Across-CUNY.png',
+                link: 'https://drive.google.com/file/d/1xbKLjy2KUbr5ftm-E2kwwggVZDfdukTy/view?usp=drive_link',
+                tags: {
+                    campus: ['City College of New York (CCNY)', 'CUNY Graduate Center', 'Hunter College', 'Macaulay Honors College'],
+                    org: [], topic: ['Air Quality'], type: ['Poster'], workstream: ['Climate Justice Fellowship & Academy']
+                }
+            },
+            {
+                fileType: 'PDF', date: 'February 25, 2025', title: 'Tracking Climate Justice Across CUNY Campuses',
+                subtext: 'Project poster presented at CUNY Climate Justice Summit by the NYC Climate Justice Hub Fellows.',
+                thumbnail: 'https://centerforthehumanities.org/wp-content/uploads/2025/10/Tracking-Climate-Justice-Across.png',
+                link: 'https://drive.google.com/file/d/1SxbXbl1ROMaj4_9N_lnrP7QUHfqN7Q3_/view?usp=drive_link',
+                tags: {
+                    campus: ['Baruch College', 'CUNY Graduate Center', 'Lehman College', 'Queens College', 'York College'],
+                    org: [], topic: ['Community'], type: ['Poster'], workstream: ['Climate Justice Fellowship & Academy']
+                }
+            },
+            {
+                fileType: 'PDF', date: 'February 25, 2025', title: 'CUNY Climate and Environmental Justice Zine',
+                subtext: 'Project poster presented at CUNY Climate Justice Summit by the NYC Climate Justice Hub Fellows.',
+                thumbnail: 'https://centerforthehumanities.org/wp-content/uploads/2025/10/CUNY-Climate-and-Environmental-Justice-Zine.png',
+                link: 'https://drive.google.com/file/d/1Ivvmpx5cjIidx_X-D65sTv9l6V7n-CXj/view?usp=drive_link',
+                tags: {
+                    campus: ['Brooklyn College', 'City College of New York (CCNY)', 'Hostos Community College', 'John Jay College of Criminal Justice', 'Medgar Evers College'],
+                    org: [], topic: ['Air Quality', 'Communications', 'Education', 'Food Justice'],
+                    type: ['Poster'], workstream: ['Climate Justice Fellowship & Academy']
+                }
+            },
+            {
+                fileType: 'PDF', date: 'February 25, 2025', title: 'Air Quality Monitoring in Brooklyn Communities',
+                subtext: 'Community collaboration poster presented at CUNY Climate Justice Summit by Hun Bok Jung, Assistant Professor of Chemistry at Kingsborough Community College, and his class.',
+                thumbnail: 'https://centerforthehumanities.org/wp-content/uploads/2025/10/Air-Quality-Monitoring-in-Brooklyn-Communities.png',
+                link: 'https://drive.google.com/file/d/1Ybb1ivQTSIUh1kYGhkNKEHCS165OC4su/view?usp=drive_link',
+                tags: {
+                    campus: ['Kingsborough Community College (KCC)'], org: [], topic: ['Air Quality'],
+                    type: ['Poster'], workstream: ['Classes & Curriculum']
+                }
+            },
+            {
+                fileType: 'PDF', date: 'February 25, 2025', title: 'Count Those Trucks! A Roadmap for Tracking Commercial Truck Traffic and Its Impacts on Hunts Point',
+                subtext: 'Community collaboration poster presented at CUNY Climate Justice Summit by Lauren Wang, Adjunct Lecturer at City College, and her class.',
+                thumbnail: 'https://centerforthehumanities.org/wp-content/uploads/2025/10/Count-Those-Trucks-A-Roadmap.png',
+                link: 'https://drive.google.com/file/d/1vyAE3KZ7Oc4vFkIIcUMJmIs5aCHvGVJ6/view?usp=drive_link',
+                tags: {
+                    campus: ['City College of New York (CCNY)'], org: ['The Point CDC'],
+                    topic: ['Air Quality', 'Transportation'], type: ['Poster'], workstream: ['Classes & Curriculum']
+                }
+            },
+            {
+                fileType: 'PDF', date: 'February 25, 2025', title: 'Addressing Extreme Heat Vulnerability in New York City',
+                subtext: 'Community collaboration poster presented at CUNY Climate Justice Summit by Kara Schlichting, Associate Professor of History at Queens College, and her class.',
+                thumbnail: 'https://centerforthehumanities.org/wp-content/uploads/2025/10/Addressing-Extreme-Heat-Vulnerability.png',
+                link: 'https://drive.google.com/file/d/1cHwHkFQJaMj0bK8DPC4nLIiLtqAvXdI-/view?usp=drive_link',
+                tags: {
+                    campus: ['CUNY Graduate Center', 'Queens College'], org: [], topic: ['Extreme Heat'],
+                    type: ['Poster'], workstream: ['Classes & Curriculum']
+                }
+            },
+            {
+                fileType: 'PDF', date: 'December 19, 2024', title: 'Count Those Trucks',
+                subtext: 'A roadmap for tracking commercial truck traffic and its impacts on the residents of Hunts Point.',
+                thumbnail: 'https://centerforthehumanities.org/wp-content/uploads/2025/09/CountThoseTrucks.png',
+                link: 'https://drive.google.com/file/d/1LIbgNXe-a6xQ44kt9744FxOTgsoCwlfK/view?usp=sharing',
+                tags: {
+                    campus: ['City College of New York (CCNY)'], org: ['The Point CDC'], topic: ['Air Quality', 'Transportation'],
+                    type: ['Report'], workstream: ['Classes & Curriculum']
+                }
+            }
+        ];
+
+        
+        const filterConfig = {
+            campus: 'CUNY Campus',
+            org: 'NYC-EJA Member Org',
+            workstream: 'Hub Workstream',
+            topic: 'Topic',
+            type: 'Type'
+        };
+
+        const resourcesGrid = document.getElementById('resourcesGrid');
+        const searchInput = document.getElementById('searchInput');
+        const noResultsMessage = document.getElementById('noResultsMessage');
+        const filtersContainer = document.getElementById('filtersContainer');
+        const selectedFiltersContainer = document.getElementById('selectedFiltersContainer');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        const sortDropdownButton = document.getElementById('sortDropdownButton');
+        const sortDropdownLabel = document.getElementById('sortDropdownLabel');
+        const sortDropdownContent = document.getElementById('sortDropdownContent');
+        const sortRadios = document.querySelectorAll('.sort-radio');
+
+
+        function openResource(link) {
+            window.open(link, '_blank', 'noopener,noreferrer');
+        }
+        
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
+            return new Date(dateString).toLocaleDateString('en-US', options);
+        }
+
+        function getImageUrl(url) {
+            if (!url) {
+                return 'https://placehold.co/600x400/e9ecef/495057?text=No+Preview';
+            }
+            if (url.includes('drive.google.com/file/d/')) {
+                const fileIdMatch = url.match(/file\/d\/([^/]+)/);
+                if (fileIdMatch && fileIdMatch[1]) {
+                    return `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
+                }
+                return 'https://placehold.co/600x400/e9ecef/495057?text=Invalid+Link';
+            }
+            return url;
+        }
+
+        const renderResources = (filteredResources) => {
+            resourcesGrid.innerHTML = '';
+            noResultsMessage.classList.toggle('hidden', filteredResources.length > 0);
+
+            filteredResources.forEach(resource => {
+                const card = document.createElement('div');
+                card.className = 'resource-card';
+                card.onclick = () => openResource(resource.link);
+                
+                const topics = resource.tags.topic || [];
+                const topicsHTML = topics.map(t => `<span class="resource-tag">${t}</span>`).join('');
+                const cardCategory = resource.tags.type && resource.tags.type.length > 0 ? resource.tags.type[0] : 'Resource';
+
+                const imageUrl = getImageUrl(resource.thumbnail);
+                const isPlaceholder = imageUrl.includes('placehold.co');
+                const imageDivClass = isPlaceholder ? 'resource-image default-bg' : 'resource-image';
+                const imageStyle = isPlaceholder ? '' : `background-image: url('${imageUrl}')`;
+                const imageContent = isPlaceholder ? '📄' : '';
+
+                card.innerHTML = `
+                    <div class="${imageDivClass}" style="${imageStyle}">${imageContent}</div>
+                    <div class="resource-content">
+                        <span class="resource-category">${cardCategory}</span>
+                        <h3 class="resource-title">${resource.title}</h3>
+                        <p class="resource-description">${resource.subtext}</p>
+                        <div class="resource-tags">${topicsHTML}</div>
+                        <div class="resource-meta">
+                            <div class="resource-date">
+                                <span>📅</span>
+                                <span>${formatDate(resource.date)}</span>
+                            </div>
+                            <span class="resource-type">${resource.fileType}</span>
+                        </div>
+                    </div>
+                `;
+                resourcesGrid.appendChild(card);
+            });
+        };
+
+        const updateSelectedFiltersDisplay = () => {
+            while (selectedFiltersContainer.firstChild && selectedFiltersContainer.firstChild !== clearAllBtn) {
+                selectedFiltersContainer.removeChild(selectedFiltersContainer.firstChild);
+            }
+
+            const activeCheckboxes = document.querySelectorAll('.filter-checkbox:checked');
+            
+            if (activeCheckboxes.length > 0) {
+                selectedFiltersContainer.classList.remove('hidden');
+                clearAllBtn.style.display = 'inline-flex';
+
+                activeCheckboxes.forEach(checkbox => {
+                    const category = checkbox.dataset.category;
+                    const value = checkbox.value;
+
+                    const tag = document.createElement('div');
+                    tag.className = 'filter-tag';
+                    tag.innerHTML = `
+                        <span>${value}</span>
+                        <span class="remove" data-category="${category}" data-value="${value}">×</span>
+                    `;
+                    selectedFiltersContainer.insertBefore(tag, clearAllBtn);
+                });
+            } else {
+                selectedFiltersContainer.classList.add('hidden');
+                clearAllBtn.style.display = 'none';
+            }
+
+            document.querySelectorAll('.filter-tag .remove').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation(); 
+                    const category = e.target.dataset.category;
+                    const value = e.target.dataset.value;
+                    const checkboxToUncheck = document.querySelector(`.filter-checkbox[data-category="${category}"][value="${value}"]`);
+                    if (checkboxToUncheck) {
+                        checkboxToUncheck.checked = false;
+                    }
+                    filterAndSearch();
+                });
+            });
+        };
+        
+        const filterAndSearch = () => {
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            const activeFilters = Object.keys(filterConfig).reduce((acc, category) => {
+                acc[category] = Array.from(document.querySelectorAll(`.filter-checkbox[data-category="${category}"]:checked`))
+                                       .map(cb => cb.value);
+                return acc;
+            }, {});
+
+            let filteredResources = resources.filter(resource => {
+                const searchFields = [
+                    resource.title,
+                    resource.subtext,
+                    ...Object.values(resource.tags).flat()
+                ].join(' ').toLowerCase();
+
+                const matchesSearch = searchFields.includes(searchTerm);
+
+                const matchesFilters = Object.keys(activeFilters).every(category => {
+                    if (activeFilters[category].length === 0) return true;
+                    if (!resource.tags[category] || resource.tags[category].length === 0) return false;
+                    return activeFilters[category].some(filter => resource.tags[category].includes(filter));
+                });
+                
+                return matchesSearch && matchesFilters;
+            });
+
+            const sortValue = document.querySelector('.sort-radio:checked').value;
+            if (sortValue === 'date-desc') {
+                filteredResources.sort((a, b) => new Date(b.date) - new Date(a.date));
+            } else if (sortValue === 'date-asc') {
+                filteredResources.sort((a, b) => new Date(a.date) - new Date(b.date));
+            } else if (sortValue === 'title-asc') {
+                filteredResources.sort((a, b) => a.title.localeCompare(b.title));
+            } else if (sortValue === 'title-desc') {
+                filteredResources.sort((a, b) => b.title.localeCompare(a.title));
+            }
+
+            renderResources(filteredResources);
+            updateSelectedFiltersDisplay();
+        };
+        
+        const setupFilters = () => {
+            const allTags = Object.keys(filterConfig).reduce((acc, category) => {
+                const categoryTags = new Set(resources.flatMap(r => r.tags[category] || []));
+                acc[category] = Array.from(categoryTags).sort();
+                return acc;
+            }, {});
+            
+            Object.keys(filterConfig).forEach(category => {
+                const tags = allTags[category];
+                if (!tags || tags.length === 0) return;
+
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'filter-group-box';
+                
+                const toggleButton = document.createElement('button');
+                toggleButton.className = 'filter-accordion-toggle w-full p-2 font-semibold text-sm text-left';
+                toggleButton.textContent = filterConfig[category];
+                toggleButton.onclick = (e) => {
+                    const clickedButton = e.currentTarget;
+                    const clickedContent = clickedButton.nextElementSibling;
+                    const isOpening = !clickedContent.classList.contains('open');
+
+                    document.querySelectorAll('.filter-group-content.open').forEach(openContent => {
+                        if (openContent !== clickedContent) {
+                           openContent.classList.remove('open');
+                           openContent.previousElementSibling.classList.remove('open');
+                        }
+                    });
+
+                    if (isOpening) {
+                        clickedButton.classList.add('open');
+                        clickedContent.classList.add('open');
+                    } else {
+                        clickedButton.classList.remove('open');
+                        clickedContent.classList.remove('open');
+                    }
+                };
+
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'filter-group-content';
+                
+                const innerWrapper = document.createElement('div');
+                innerWrapper.className = 'p-2 space-y-1';
+
+                tags.forEach(tag => {
+                    const label = document.createElement('label');
+                    label.className = 'flex items-center space-x-2 cursor-pointer text-xs hover:text-brand-blue';
+                    label.innerHTML = `
+                        <input type="checkbox" class="filter-checkbox rounded w-3.5 h-3.5 border-gray-300 text-brand-blue focus:ring-brand-blue" data-category="${category}" value="${tag}">
+                        <span title="${tag}">${tag}</span>
+                    `;
+                    innerWrapper.appendChild(label);
+                });
+
+                contentDiv.appendChild(innerWrapper);
+                groupDiv.appendChild(toggleButton);
+                groupDiv.appendChild(contentDiv);
+                filtersContainer.appendChild(groupDiv);
+            });
+            
+            document.querySelectorAll('.filter-checkbox').forEach(cb => cb.addEventListener('change', filterAndSearch));
+        };
+        
+        clearAllBtn.onclick = () => {
+            searchInput.value = '';
+            document.querySelectorAll('.filter-checkbox').forEach(cb => cb.checked = false);
+            document.querySelector('.sort-radio[value="date-desc"]').checked = true;
+            sortDropdownLabel.textContent = 'Date (Newest)';
+            filterAndSearch();
+        };
+
+        searchInput.addEventListener('input', filterAndSearch);
+        
+        sortDropdownButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sortDropdownContent.classList.toggle('hidden');
+            sortDropdownButton.classList.toggle('open');
+        });
+
+        document.addEventListener('click', () => {
+            sortDropdownContent.classList.add('hidden');
+            sortDropdownButton.classList.remove('open');
+        });
+
+        sortRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                const selectedLabel = radio.nextElementSibling.textContent;
+                sortDropdownLabel.textContent = selectedLabel;
+                sortDropdownContent.classList.add('hidden');
+                sortDropdownButton.classList.remove('open');
+                filterAndSearch();
+            });
+        });
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            setupFilters();
+            filterAndSearch();
+        });
+
+    </script>
+</body>
+</html>

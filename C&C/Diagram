@@ -1,0 +1,322 @@
+<div class="climate-hub-container">
+
+    <!-- SVG Canvas for background connections -->
+    <!-- Coordinates are based on a 1400w x 1000h viewBox -->
+    <svg class="connection-svg" preserveAspectRatio="xMidYMin meet" viewBox="0 0 1400 1000">
+        
+        <!-- Main connector from Root -->
+        <path d="M 700 365 V 200" /> <!-- Vertical line down from root -->
+        <path d="M 0 250 H 1400" /> <!-- Horizontal bar for tiers -->
+
+        <!-- Connectors to Tiers -->
+        <path d="M 0 250 V 300" /> <!-- Line to Tier 1 -->
+        <!--<path d="M 365 250 V 280" /> --> <!-- Line to Tier 2 -->
+        <path d="M 1400 250 V 300" /> <!-- Line to Tier 3 -->
+
+        <!-- Connectors from Tier 1 to its children -->
+        <path d="M 100 570 V 645" /> <!-- Line down from Tier 1 -->
+        <path d="M -50 645 H 250" /> <!-- Horizontal bar for Tier 1 children -->
+        <path d="M -50 645 V 690" /> <!-- Line to Advising -->
+        <path d="M 250 645 V 690" /> <!-- Line to PLC -->
+
+        <!-- Connectors from Tier 3 to its children (Shifted left) -->
+        <path d="M 1315 630 V 675" /> <!-- Line down from Tier 3 -->
+        <path d="M 850 675 H 1390" /> <!-- Horizontal bar for Tier 3 children (shifted left) -->
+        <path d="M 850 675 V 750" /> <!-- Line to Research (shifted left) -->
+        <path d="M 1390 675 V 750" /> <!-- Line to Capstone (shifted left) -->
+    </svg>
+
+    <!-- Diagram content must be in a wrapper to sit on top of the SVG -->
+    <div class="diagram-content" role="figure" aria-label="A flowchart of the NYC Climate Justice Hub's Classes and Curriculum Resources.">
+        
+        <!-- Root Node -->
+        <div class="root-node">
+            <div class="node-box root-box" id="root">
+                The NYC Climate Justice Hub<br>Classes & Curriculum Resources
+            </div>
+        </div>
+
+        <!-- Tier Level -->
+        <div class="tier-level">
+            
+            <!-- Tier 1 Wrapper -->
+            <div class="tier-wrapper">
+                <div class="node-box tier-box" id="tier-1" aria-labelledby="tier-1-heading" aria-describedby="tier-1-desc">
+                    <a href="#tier-1-engagement"><h2 id="tier-1-heading">Tier I: Curriculum/Syllabus Advising</h2></a>
+                    <p id="tier-1-desc">Connect with our amazing team to discuss your ideas, questions, and opportunities to integrate CJ into your curriculum. Whether you are starting from scratch or looking to augment a seasoned curriculum, our team will help to support you throughout the curriculum creation process.</p>
+                </div>
+                <!-- Tier 1 Children -->
+                <div class="children-level" id="tier-1-children" aria-label="Outputs of Tier 1">
+                    <div class="child-node">
+                        <div class="node-box sub-box-pill" id="sub-advising" role="link" tabindex="0">Advising</div>
+                    </div>
+                    <div class="child-node">
+                        <div class="node-box sub-box-pill" id="sub-plc" role="link" tabindex="0">Professional Learning Community</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tier 2 Wrapper -->
+            <div class="tier-wrapper">
+                <div class="node-box tier-box" id="tier-2" aria-labelledby="tier-2-heading" aria-describedby="tier-2-desc">
+                    <a href="#tier-2-engagement"><h2 id="tier-2-heading">Tier II: Public Programming</h2></a>
+                    <p id="tier-2-desc">Interested in organizing an event to expand Climate Justice education to the broader CUNY Community? The Climate Justice Hub can leverage its network to support the planning and outreach to amplify its impact.</p>
+                </div>
+                <!-- Tier 2 has no children -->
+                <div class="children-level" aria-hidden="true"></div>
+            </div>
+            
+            <!-- Tier 3 Wrapper -->
+            <div class="tier-wrapper">
+                <div class="node-box tier-box" id="tier-3" aria-labelledby="tier-3-heading" aria-describedby="tier-3-desc">
+                    <a href="#tier-3-engagement"><h2 id="tier-3-heading">Tier III: NYC-EJA &lt;&gt; CUNY Course Collaborations</h2></a>
+                    <p id="tier-3-desc">A selective number of courses will work with specific NYC-EJA member organizations on projects or research that falls within the needs of the organization. Course collaborations require a larger time commitment for preparation and coordination. More information can be found in the Course Collaborations option in the form below.</p>
+                </div>
+                <!-- Tier 3 Children -->
+                <div class="children-level" id="tier-3-children" aria-label="Outputs of Tier 3">
+                    <div class="child-node">
+                        <div class="node-box sub-box-desc" id="sub-research" aria-labelledby="sub-research-heading" aria-describedby="sub-research-desc">
+                            <h2 id="sub-research-heading">Research</h2>
+                            <p id="sub-research-desc">Faculty who are teaching classes that take on NYC-EJA priorities as projects to enhance the class goals and understanding of NYC-EJA priorities.</p>
+                        </div>
+                    </div>
+                    <div class="child-node">
+                        <div class="node-box sub-box-desc" id="sub-capstone" aria-labelledby="sub-capstone-heading" aria-describedby="sub-capstone-desc">
+                            <h2 id="sub-capstone-heading">Capstone Projects</h2>
+                            <p id="sub-capstone-desc">A group of advanced students take on research projects of importance to NYC-EJA that require some background in a particular area of study.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+    
+    <style>
+        /* General styling for the page */
+        body {
+            /* Added a body background to make the container visible */
+            background-color: #f0f4f8; 
+            
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* General styling for the container from example */
+        .climate-hub-container {
+            font-family: 'Inter', sans-serif;
+            background-color: #2E6B24; /* Base background */
+            color: #FFFFFF; /* Base text color */
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 1500px;
+            margin: 0 auto;
+            position: relative; /* Needed for the SVG overlay */
+            /* overflow: hidden; */ /* REMOVED: This was clipping the capstone project */
+        }
+
+        /* Base style for all diagram nodes */
+        .node-box {
+            background-color: #22481d; /* Darker shade from example */
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid #6BFA53; /* Accent border */
+            text-align: left;
+            z-index: 10; /* Ensure boxes are above lines */
+            position: relative; /* Ensure z-index applies */
+            width: 100%;
+            box-sizing: border-box; /* Include padding in width */
+        }
+
+        /* Style for the Root node, based on hub-title and box */
+        .root-box {
+            text-align: center;
+            font-family: 'Inter Tight', sans-serif;
+            font-weight: 600;
+            font-size: 2rem;
+            color: #FFFFFF;
+            max-width: 700px;
+            margin: 0 auto 4rem auto; /* Added more bottom margin for connectors */
+        }
+
+        /* Style for Tier boxes and description sub-boxes, from .hub-equation .box */
+        .tier-box,
+        .sub-box-desc {
+            height: 100%; /* Make boxes in a row equal height */
+        }
+
+        .tier-box h2,
+        .sub-box-desc h2 {
+            margin: 0 0 0.5rem 0;
+            font-family: 'Inter Tight', sans-serif;
+            font-weight: 600;
+            font-size: 1.5rem; /* Adjusted for clarity */
+            color: #6BFA53; /* Accent color */
+        }
+
+        .tier-box p,
+        .sub-box-desc p {
+            margin: 0;
+            font-size: 1.07rem; /* Adjusted for clarity */
+            line-height: 1.5;
+            color: #FFFFFF;
+        }
+        
+        /* Style for pill-shaped sub-boxes, from .clickable-box */
+        .sub-box-pill {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            color: #FFFFFF;
+            background-color: #22481d;
+            border: 1px solid #6BFA53;
+            padding: 1rem 1.25rem;
+            border-radius: 30px; /* Pill-shaped boxes */
+            text-align: center;
+            font-weight: 400;
+            font-size: 1.1rem;
+            height: 100%; /* Match height of siblings */
+            box-sizing: border-box;
+        }
+
+        /* --- Layout Structure --- */
+
+        .diagram-content {
+            position: relative;
+            z-index: 2; /* Content above SVG */
+        }
+
+        /* Flex container for the three main tiers */
+        .tier-level {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start; /* Align top */
+            gap: 1.5rem;
+        }
+
+        /* Wrapper for each tier and its children */
+        .tier-wrapper {
+            flex-basis: 32%; /* Create three stable columns */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4rem; /* Space between tier and its children */
+        }
+
+        /* Flex container for the children of a tier */
+        .children-level {
+            display: flex;
+            justify-content: center;
+            align-items: stretch; /* Make children equal height */
+            gap: 1rem;
+            width: 100%;
+        }
+
+        .child-node {
+            flex: 1; /* Each child takes equal space */
+            display: flex; /* To make the node-box fill the height */
+        }
+
+        .tier-wrapper:nth-child(3) .children-level {
+            width: 180%; /* This makes the children's container 80% wider than the parent column */
+            margin-left: -70%; /* Pulls the wider container left to re-center it */
+            margin-bottom: 1rem;
+        }
+
+
+        /* --- SVG Connectors (from example) --- */
+        .connection-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Allows clicks to go through */
+            z-index: 1; /* Behind content, above background */
+        }
+        
+        /* Animation for the SVG paths */
+        .connection-svg path {
+            stroke: #6BFA53;
+            stroke-width: 2;
+            fill: none;
+            /* stroke-dasharray: 8 4; */ /* Dashed line effect */
+            /* animation: flow 50s linear infinite; */
+        }
+        
+        /* Keyframe animation for flowing lines */
+        @keyframes flow {
+            from {
+                stroke-dashoffset: 1000;
+            }
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        /* --- Responsive Design (from example) --- */
+
+        /* Media query for tablet screens */
+        @media (max-width: 960px) {
+            .tier-level {
+                flex-direction: column; /* Stack tiers vertically */
+                align-items: stretch;
+                gap: 2rem;
+            }
+            .tier-wrapper {
+                flex-basis: 100%; /* Each tier takes full width */
+                gap: 2rem; /* Reduce gap */
+            }
+            .connection-svg {
+                display: none; /* Hide complex SVG on smaller screens */
+            }
+            .root-box {
+                margin-bottom: 2rem;
+            }
+            
+            /* FIXED: Stacks children vertically on tablet */
+            .children-level {
+                flex-direction: column; /* Stack children */
+                gap: 1rem;
+            }
+            
+            /* FIXED: Resets the Tier 3 children for tablet */
+            .tier-wrapper:nth-child(3) .children-level {
+                width: 100% !important;
+                margin-left: 0 !important;
+            }
+        }
+
+        /* Media query for mobile screens */
+        @media (max-width: 540px) {
+            body {
+                padding: 0.5rem;
+            }
+            .climate-hub-container {
+                padding: 1rem;
+            }
+            .root-box {
+                font-size: 1.5rem;
+            }
+            
+            .tier-box h2,
+            .sub-box-desc h2 {
+                font-size: 1.25rem;
+            }
+            .tier-box p,
+            .sub-box-desc p,
+            .sub-box-pill {
+                font-size: 0.9rem;
+            }
+            
+            /* FIXED: Ensures Tier 3 children reset for mobile */
+            .tier-wrapper:nth-child(3) .children-level {
+                width: 100% !important;
+                margin-left: 0 !important;
+            }
+        }
+
+    </style>

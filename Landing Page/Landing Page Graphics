@@ -1,0 +1,430 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=Inter+Tight:wght@600&display=swap" rel="stylesheet">
+    <style>
+        /* General styling for the container */
+        .climate-hub-container {
+            font-family: 'Roboto Expanded', sans-serif;
+            font-weight: 600;
+            font-style: normal;
+            background-color: #2E6B24; /* New background color */
+            color: #FFFFFF; /* New text color */
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 1500px;
+            margin: 2rem auto;
+        }
+
+        /* New Title Style */
+        .hub-title {
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 2.5rem;
+            color: #FFFFFF;
+            margin-bottom: 2rem;
+        }
+
+        /* Top section with the equation */
+        .hub-equation {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr auto 1fr;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem; /* Reduced gap */
+        }
+
+        /* Styling for individual boxes in the equation */
+        .hub-equation .box {
+            background-color: #22481d; /* Darker shade of new background */
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: left;
+            border: 1px solid #6BFA53;
+        }
+
+        .hub-equation .box h2 {
+            margin: 0 0 0.5rem 0;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600; /* Semi Bold */
+            font-size: 2rem;
+            color: #6BFA53; /* New accent color */
+        }
+        
+        .hub-equation .box p {
+            margin: 0;
+            font-size: 1.2rem;
+            line-height: 1.5;
+            color: #FFFFFF;
+        }
+
+        .hub-equation span {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #6BFA53;
+            text-align: center;
+        }
+
+        .left-column-wrapper {
+            flex-basis: 440px;
+            z-index: 1; /* Ensure content is above the SVG lines */
+        }
+
+        .column-title {
+            color: #6BFA53;
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600; /* Semi Bold */
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Main diagram content */
+        .hub-diagram {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap; /* Responsive wrapping */
+            position: relative; /* For positioning arrows and SVG canvas */
+            padding: 0; /* Reduced gap */
+            padding-bottom: 4rem; /* Add space for the new arrow */
+        }
+
+        /* Columns */
+        .left-column, .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .left-column {
+            border: 2px dashed #6BFA53; /* New accent color */
+            padding: 1rem; /* Added padding */
+            border-radius: 15px; /* Added border-radius */
+            background-color: #2E6B24; /* Match container background */
+        }
+
+        .right-column-wrapper {
+            flex-basis: 440px;
+            z-index: 1; /* Ensure content is above the SVG lines */
+        }
+
+        .right-column {
+            border: 2px dashed #6BFA53; /* New accent color */
+            padding: 1rem; /* Added padding */
+            border-radius: 15px; /* Added border-radius */
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            background-color: #2E6B24; /* Match container background */
+        }
+
+        .left-column .org-row {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-start;
+        }
+
+        /* Styling for the clickable boxes */
+        .clickable-box {
+            display: flex; 
+            justify-content: center;
+            align-items: center;
+            text-decoration: none; /* Remove underline from links */
+            color: #FFFFFF;
+            background-color: #6BFA53;
+            border: 1px solid #6BFA53;
+            padding: 1rem 1.25rem;
+            border-radius: 30px; /* Pill-shaped boxes */
+            text-align: center;
+            font-weight: 400; /* Regular weight */
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            flex-grow: 1;
+            font-size: 1.2rem;
+        }
+        .left-column .clickable-box {
+    background-color: #22481d; /* Dark background color from the right column */
+    color: #FFFFFF; /* Light text color from the right column */
+    font-weight: 400;
+    font-size: 1.2rem;
+    padding: 1.25rem 1rem; /* Padding from the right column */
+    border: none; /* Remove the border */
+    border-radius: 15px; /* Change to a rectangular shape, matching the right column */
+    flex-grow: 1; /* Retain this for full-width boxes */
+    width: auto; /* Ensure it takes the full width of the parent flex item */
+    /* Overwrite the Brotherhood box style */
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+}
+        .right-column .clickable-box {
+            background-color: #22481d;
+            color: #FFFFFF;
+            font-weight: 400;
+            font-size: 1.2rem;
+            padding: 1.25rem 1rem;
+            border: none;
+            border-radius: 15px;
+        }
+
+        .clickable-box:hover {
+            transform: translateY(-3px); /* Slight lift effect on hover */
+            filter: brightness(1.2);
+        }
+        
+        .brotherhood-box {
+            width: 100%;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        /* Center graphic area */
+        .center-graphic {
+            flex: 1;
+            text-align: center;
+            min-width: 250px;
+            padding: 1rem;
+            position: relative;
+            z-index: 1; /* Ensure content is above the SVG lines */
+        }
+        
+        .cuny-hub {
+            width: 150px; /* Increased size */
+            height: 150px; /* Increased size */
+            border-radius: 50%;
+            background-color: #22481d;
+            border: 2px solid #6BFA53;
+            color: #FFFFFF;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 1.7rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+            /* New animation for pulsing effect */
+            /* animation: pulse 2.5s infinite ease-in-out; */
+            position: relative; /* Add this */
+            top: 30px;          /* Add this */
+            left: 0px;         /* Add this */
+        }
+
+        /* Keyframe animation for the pulsing CUNY hub */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(107, 250, 83, 0.7);
+            }
+            70% {
+                transform: scale(1.05);
+                box-shadow: 0 0 10px 20px rgba(107, 250, 83, 0);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(107, 250, 83, 0);
+            }
+        }
+
+        .investment-text {
+            border: 1px solid #6BFA53;
+            border-radius: 15px;
+            padding: 1.25rem;
+            margin: 0rem 5rem 0 auto;
+            font-size: 1.2rem;
+            line-height: 1.5;
+            background-color: #22481d;
+            max-width: 1200px;
+            text-align: center;
+        }
+
+        /* Bottom description text */
+        .hub-description {
+            margin-top: 2rem;
+            text-align: left;
+            font-size: 1.3rem;
+            line-height: 1.7;
+            padding: 0 1rem;
+        }
+
+        .connection-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Allows clicks to go through to elements behind it */
+        }
+        
+        /* New animation for the SVG paths */
+        .connection-svg path {
+            stroke-dasharray: 8 4; /* Updated to create a dashed line */
+            animation: flow 50s linear infinite;
+        }
+        
+        /* Keyframe animation for flowing lines */
+        @keyframes flow {
+            from {
+                stroke-dashoffset: 1000;
+            }
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+        
+        /* Media query for tablet screens */
+        @media (max-width: 960px) {
+            .hub-equation {
+                grid-template-columns: 1fr;
+            }
+            .hub-equation span {
+                display: none;
+            }
+             .hub-diagram {
+                flex-direction: column;
+            }
+            .left-column-wrapper, .right-column-wrapper, .center-graphic {
+                width: 100%;
+                flex-basis: auto;
+            }
+            .connection-svg {
+                display: none; /* Hide complex SVG on mobile */
+            }
+        }
+
+        /* Media query for mobile screens */
+        @media (max-width: 540px) {
+            .climate-hub-container {
+                padding: 1rem;
+            }
+            .hub-title {
+                font-size: 2rem;
+            }
+            .hub-equation .box h2, .cuny-hub {
+                font-size: 1.5rem;
+            }
+            .hub-equation .box p, .clickable-box, .investment-text {
+                font-size: 1rem;
+            }
+            .column-title {
+                font-size: 1.25rem;
+            }
+            .left-column .org-row {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .clickable-box {
+                padding: 0.75rem 1rem;
+            }
+            .right-column .clickable-box {
+                padding: 1rem;
+            }
+            .cuny-hub {
+                width: 100px;
+                height: 100px;
+            }
+            .hub-description {
+                font-size: 1rem;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="climate-hub-container">
+    
+    <!-- New Main Title -->
+    <h1 class="hub-title">How the NYC Climate Justice Hub Works</h1>
+
+    <!-- Top Equation Section -->
+    <div class="hub-equation">
+        <div class="box">
+            <h2>Communities</h2>
+            <p>Six grassroots NYC-EJA member organizations set climate justice-oriented campaigns and priorities based on the needs of their communities.</p>
+        </div>
+        <span>+</span>
+        <div class="box">
+            <h2>Campuses</h2>
+            <p>A university network of 25 colleges contribute resources to help fulfill the NYC-EJA member organizations’ campaigns and priorities</p>
+        </div>
+        <span>=</span>
+        <div class="box">
+            <h2>NYC Climate Justice Hub</h2>
+            <p>Through this collaboration, three core programs developed by the Hub serve NYC-EJA member organizations and NYC’s environmental justice communities.</p>
+        </div>
+    </div>
+
+    <!-- Main Diagram Section -->
+    <div class="hub-diagram" role="figure" aria-label="A diagram showing community organizations collaborating with the CUNY university hub, which in turn powers several climate justice programs.">
+        
+        <!-- SVG Canvas for background connections -->
+        <svg class="connection-svg" preserveAspectRatio="none" viewBox="0 0 1000 350">
+            <!-- Definitions for markers like arrowheads -->
+            <defs>
+                <marker id="arrowhead" viewBox="0 0 10 10" refX="5" refY="5"
+                    markerWidth="12" markerHeight="12"
+                    orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#6BFA53"></path>
+                </marker>
+            </defs>
+            
+            <!-- A single, dashed line from Left to Center with an arrowhead -->
+            <path d="M 255,175 L 438,175" stroke="#6BFA53" stroke-width="2" fill="none" marker-end="url(#arrowhead)" vector-effect="non-scaling-stroke" />
+
+            <!-- A single, dashed line from Center to Right with an arrowhead - Corrected Length -->
+            <path d="M 515,175 L 685,175" stroke="#6BFA53" stroke-width="2" fill="none" marker-end="url(#arrowhead)" vector-effect="non-scaling-stroke" />
+
+            <!-- New line from Member Organizations down -->
+            <path d="M 200,350 V 290" stroke="#6BFA53" stroke-width="2" fill="none" marker-end="url(#arrowhead)" vector-effect="non-scaling-stroke" />
+
+            <!-- New line from Hub Programs down -->
+            <path d="M 900,280 V 340" stroke="#6BFA53" stroke-width="2" fill="none" marker-end="url(#arrowhead)" vector-effect="non-scaling-stroke" />
+
+        </svg>
+
+        <div class="left-column-wrapper">
+            <h3 class="column-title">NYC-EJA Member Organizations</h3>
+            <!-- Left Column: Community Orgs -->
+            <div class="left-column">
+                <div class="org-row">
+                    <a href="https://www.elpuente.org/" class="clickable-box" target="_blank" rel="noopener noreferrer">El Puente</a>
+                    <a href="https://www.nosquedamos.org/" class="clickable-box" target="_blank" rel="noopener noreferrer">Nos Quedamos</a>
+                </div>
+                <div class="org-row">
+                    <a href="https://www.goles.org/" class="clickable-box" target="_blank" rel="noopener noreferrer">GOLES</a>
+                    <a href="https://www.uprose.org/" class="clickable-box" target="_blank" rel="noopener noreferrer">UPROSE</a>
+                    <a href="https://www.thepoint.org/" class="clickable-box" target="_blank" rel="noopener noreferrer">The Point</a>
+                </div>
+                <div class="org-row">
+                     <a href="https://brotherhood-sistersol.org/" class="clickable-box brotherhood-box" target="_blank" rel="noopener noreferrer">The Brotherhood Sister Sol</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Center Graphic -->
+        <div class="center-graphic">
+            <div class="cuny-hub">CUNY</div>
+        </div>
+
+        <!-- Right Column: Programs -->
+        <div class="right-column-wrapper">
+            <h3 class="column-title">Hub Programs</h3>
+            <div class="right-column">
+                <a href="https://centerforthehumanities.org/project/climate-justice-hub/research-teams/" class="clickable-box">Research Teams</a>
+                <a href="https://centerforthehumanities.org/project/climate-justice-hub/classes-and-curriculums/" class="clickable-box">Classes & Curriculum Collaborations</a>
+                <a href="https://centerforthehumanities.org/project/climate-justice-hub/cuny-climate-justice-academy-and-ambassador-program/" class="clickable-box">Climate Justice Fellowship & Academy Program</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Investment Text Section -->
+    <div class="investment-text">
+        Outputs from the Hub’s programs are invested directly into supporting NYC-EJA member organizations and their agendas.
+    </div>
+
+    <!-- Bottom Description Section -->
+    <div class="hub-description">
+        The NYC Climate Justice Hub uses the Jemez Principles and Principles of Environmental Justice to center NYC community members' needs to transform CUNY and other institutions in NYC In how they teach, learn, and conduct research about climate issues. An extremely diverse and NYC-centered institution, CUNY is positioned to be a partner to NYC-EJA in this work, especially given the fact that many students and faculty at CUNY live and work in the neighborhoods that NYC EJA member organizations serve.
+    </div>
+
+</div>

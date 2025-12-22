@@ -1,0 +1,477 @@
+<div class="wordpress-block-container">
+  <div class="carousel-container">
+    
+ 
+    <div class="carousel-slide active">
+      <div class="slide-content-wrapper" onclick="window.open('https://centerforthehumanities.org/event/join-the-nyc-climate-justice-hubs-professional-learning-community-plc/', '_self')">
+        <div class="slide-image">
+          <img src="https://centerforthehumanities.org/wp-content/uploads/2025/08/PLC-scaled.jpg" alt="Professional Learning Community" onerror="this.onerror=null;this.src='https://placehold.co/800x500/2E6B24/FFFFFF?text=Image';">
+        </div>
+        <div class="slide-content">
+          <h2 class="slide-title">The Hub's Professional Learning Community (PLC) Is On!</h2>
+          <h3 class="slide-subheading">Fall 2025</h3>
+          <p class="slide-description">The second annual Professional Learning Community (PLC) brings together students, faculty, and climate justice activists representing various CUNY campuses, NYC-EJA member organizations, and other institutions. Participants engage in a critical analysis of the socio-environmental factors influencing climate justice in the NYC's working-class communities of color that the New York City Environmental Justice Alliance (NYC-EJA) serves.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="carousel-slide">
+      <div class="slide-content-wrapper" onclick="window.open('https://centerforthehumanities.org/nyc-climate-justice-hub-2025-2026-fellowship-internship-programs-kick-off-finding-a-community/', '_self')">
+        <div class="slide-image">
+          <img src="https://centerforthehumanities.org/wp-content/uploads/2025/11/IMG_0046-scaled.jpg" alt="Fellowship 2nd Cohort">
+        </div>
+        <div class="slide-content">
+          <h2 class="slide-title">NYC Climate Justice Hub 2025-2026 Fellowship & Internship Programs Kick Off: Finding a Community!</h2>
+          <h3 class="slide-subheading">November 3, 2025</h3>
+          <p class="slide-description">The NYC Climate Justice Hub’s Fellowship & Internship program kicked off the second cohort this past month with an intensive three-day Academy from October 7th-9th. The event brought together nine Fellows and five Interns, along with the Hub and New York City Environmental Justice Alliance (NYC-EJA)‘s staff, to engage in meaningful conversations around climate justice issues over meals.</p>
+        </div>
+      </div>
+    </div>
+
+
+
+<!--
+    <div class="carousel-slide">
+      <div class="slide-content-wrapper" onclick="window.open('https://centerforthehumanities.org/event/wepa-event-link-placeholder/', '_self')">
+        <div class="slide-image">
+          <img src="https://centerforthehumanities.org/wp-content/uploads/2025/10/WEPA.png" alt="WEPA! Event" onerror="this.onerror=null;this.src='https://placehold.co/800x500/2E6B24/FFFFFF?text=Image';">
+        </div>
+        <div class="slide-content">
+          <h2 class="slide-title">WEPA!</h2>
+          <h3 class="slide-subheading">Saturday, September 27, 2025</h3>
+          <p class="slide-description">WEPA! celebrates Latin culture with music and dance performances, workshops, and a food market. This year's theme is "Defend!" as NYC communities face gentrification, climate change, and funding cuts to grassroots organizations like El Puente.</p>
+        </div>
+      </div>
+    </div>
+-->
+
+
+    <!-- Controls -->
+    <button class="carousel-arrow prev">‹</button>
+    <button class="carousel-arrow next">›</button>
+    
+    <!-- Navigation dots container (now dynamically populated by JS) -->
+    <div class="carousel-nav"></div>
+  </div>
+</div>
+
+<script>
+  class ImageTextCarousel {
+    constructor() {
+      this.currentSlide = 0;
+      this.slides = document.querySelectorAll('.carousel-slide');
+      // Select the navigation container
+      this.navContainer = document.querySelector('.carousel-nav'); 
+      // this.dots will be populated dynamically
+      this.dots = []; 
+      this.prevBtn = document.querySelector('.carousel-arrow.prev');
+      this.nextBtn = document.querySelector('.carousel-arrow.next');
+      this.container = document.querySelector('.carousel-container');
+      this.autoSlideInterval = null;
+      this.init();
+    }
+    
+    /**
+     * Dynamically creates and initializes navigation dots based on the number of slides.
+     */
+    createDots() {
+      if (!this.navContainer) return;
+
+      // Clear any existing elements
+      this.navContainer.innerHTML = ''; 
+
+      this.slides.forEach((_, index) => {
+        const dot = document.createElement('div');
+        dot.classList.add('nav-dot');
+        dot.addEventListener('click', () => this.goToSlide(index));
+        this.navContainer.appendChild(dot);
+      });
+
+      // Update the dots property with the newly created elements
+      this.dots = document.querySelectorAll('.nav-dot'); 
+    }
+
+    init() {
+      this.checkSingleSlide();
+      
+      if (this.slides.length > 1) {
+        this.createDots(); // Generate dots before attaching listeners
+        
+        this.prevBtn.addEventListener('click', () => this.prevSlide());
+        this.nextBtn.addEventListener('click', () => this.nextSlide());
+        
+        this.startAutoSlide();
+        this.container.addEventListener('mouseenter', () => this.stopAutoSlide());
+        this.container.addEventListener('mouseleave', () => this.startAutoSlide());
+        this.addTouchSupport();
+      }
+      
+      // Show the initial slide and set the active dot status
+      this.showSlide(this.currentSlide); 
+    }
+    
+    checkSingleSlide() {
+      if (this.slides.length <= 1) {
+        this.container.classList.add('single-slide');
+      } else {
+        this.container.classList.remove('single-slide');
+      }
+    }
+    
+    showSlide(index) {
+      // Deactivate all slides and dots
+      this.slides.forEach(slide => slide.classList.remove('active'));
+      this.dots.forEach(dot => dot.classList.remove('active')); 
+
+      // Activate the target slide and dot
+      this.slides[index].classList.add('active');
+      if (this.dots[index]) {
+        this.dots[index].classList.add('active');
+      }
+      this.currentSlide = index;
+    }
+    
+    nextSlide() {
+      const nextIndex = (this.currentSlide + 1) % this.slides.length;
+      this.showSlide(nextIndex);
+    }
+    
+    prevSlide() {
+      const prevIndex = (this.currentSlide - 1 + this.slides.length) % this.slides.length;
+      this.showSlide(prevIndex);
+    }
+    
+    goToSlide(index) {
+      this.showSlide(index);
+    }
+    
+    startAutoSlide() {
+      if (this.slides.length <= 1) return;
+      this.autoSlideInterval = setInterval(() => {
+        this.nextSlide();
+      }, 3000);
+    }
+    
+    stopAutoSlide() {
+      if (this.autoSlideInterval) {
+        clearInterval(this.autoSlideInterval);
+        this.autoSlideInterval = null;
+      }
+    }
+    
+    addTouchSupport() {
+      if (this.slides.length <= 1) return;
+      let startX = 0;
+      let endX = 0;
+      const handleSwipe = () => {
+        const threshold = 50;
+        const difference = startX - endX;
+        if (Math.abs(difference) > threshold) {
+          if (difference > 0) {
+            this.nextSlide();
+          } else {
+            this.prevSlide();
+          }
+        }
+      };
+      
+      this.container.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+      });
+      this.container.addEventListener('touchend', (e) => {
+        endX = e.changedTouches[0].clientX;
+        handleSwipe();
+      });
+      this.container.addEventListener('mousedown', (e) => {
+        startX = e.clientX;
+      });
+      this.container.addEventListener('mouseup', (e) => {
+        endX = e.clientX;
+        handleSwipe();
+      });
+    }
+  }
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    new ImageTextCarousel();
+  });
+</script>
+
+<style>
+  /* CSS remains the same as it correctly handles the styling for the .nav-dot class */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    /* Base font style for the whole component */
+    font-family: "Martina Plantijn", serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  .wordpress-block-container {
+    background-color: white;
+    padding: 20px;
+    width: 100%;
+    margin-top: -40px !important;
+  }
+
+  .carousel-container {
+    max-width: 1600px;
+    width: 100%;
+    height: 500px;
+    margin: 5px auto;
+    background-color: transparent;
+    position: relative;
+    overflow: visible;
+  }
+
+  .carousel-slide {
+    display: none;
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .carousel-slide.active {
+    display: flex;
+    align-items: center;
+  }
+
+  .slide-content-wrapper {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2),
+      0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+    overflow: hidden;
+  }
+
+  .slide-content-wrapper[onclick] {
+    cursor: pointer;
+  }
+
+  .slide-content-wrapper:hover {
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25),
+      0 6px 15px rgba(0, 0, 0, 0.15);
+  }
+
+  .slide-image {
+    flex: 0 0 50%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .slide-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .slide-image img:hover {
+    transform: scale(1.05);
+  }
+
+  .slide-content {
+    flex: 1;
+    padding: 40px;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    background-color: white;
+  }
+
+  .slide-title {
+    /* Title is now normal weight */
+    font-weight: 400;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    line-height: 1.2;
+    transition: color 0.3s ease;
+  }
+
+  .slide-content-wrapper[onclick]:hover .slide-title {
+    color: #2E6B24;
+  }
+
+  .slide-subheading {
+    /* Subheading is now normal style and weight */
+    font-style: normal;
+    font-weight: 400;
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    line-height: 1.3;
+    opacity: 0.8;
+  }
+
+  .slide-description {
+    /* Inherits normal font style from body */
+    font-size: 1.2rem;
+    line-height: 1.6;
+    margin-bottom: 25px;
+    opacity: 0.95;
+  }
+
+  /* Navigation */
+  .carousel-nav {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+  }
+
+  .nav-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .nav-dot.active {
+    background: #6BFA53;
+    transform: scale(1.2);
+  }
+
+  /* Arrow Navigation */
+  .carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(107, 250, 83, 0.8);
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 24px;
+    color: black;
+    transition: all 0.3s ease;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .carousel-arrow:hover {
+    background: #6BFA53;
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  .carousel-arrow.prev {
+    left: 20px;
+  }
+
+  .carousel-arrow.next {
+    right: 20px;
+  }
+
+  .carousel-container.single-slide .carousel-arrow,
+  .carousel-container.single-slide .carousel-nav {
+    display: none;
+  }
+
+  @media (max-width: 1200px) {
+    .carousel-container {
+      max-width: 90%;
+      height: 350px;
+    }
+
+    .slide-content {
+      padding: 30px;
+    }
+
+    .slide-title {
+      font-size: 2rem;
+    }
+
+    .slide-subheading {
+      font-size: 1.2rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .carousel-container {
+      height: auto;
+      min-height: 500px;
+    }
+
+    .carousel-slide.active {
+      flex-direction: column;
+    }
+
+    .slide-content-wrapper {
+      flex-direction: column;
+    }
+
+    .slide-image {
+      flex: 0 0 250px;
+      width: 100%;
+    }
+
+    .slide-content {
+      padding: 25px;
+      text-align: center;
+    }
+
+    .slide-title {
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+    }
+
+    .slide-subheading {
+      font-size: 1.1rem;
+      margin-bottom: 15px;
+    }
+
+    .slide-description {
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+    }
+
+    .carousel-arrow {
+      width: 40px;
+      height: 40px;
+      font-size: 20px;
+    }
+
+    .carousel-arrow.prev {
+      left: 10px;
+    }
+
+    .carousel-arrow.next {
+      right: 10px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .slide-content {
+      padding: 20px;
+    }
+
+    .slide-title {
+      font-size: 1.5rem;
+    }
+
+    .slide-subheading {
+      font-size: 1rem;
+    }
+
+    .slide-description {
+      font-size: 1rem;
+    }
+  }
+</style>
