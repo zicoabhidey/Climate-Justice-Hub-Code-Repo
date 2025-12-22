@@ -45,6 +45,6 @@ git clone https://github.com/zicoabhidey/Climate-Justice-Hub-Code-Repo.git
 
 ## 🏛️ Acknowledgments
 
-This work was produced during my internship supporting the Climate Justice Hub initiative. I worked alongside researchers and activists to translate complex environmental data into accessible digital tools for the public.
+This project was developed as part of an internship supporting the Climate Justice Hub initiative at the Center for the Humanities. I am grateful for the opportunity to have contributed to the Hub's mission by translating intricate environmental research into user-friendly, interactive digital platforms that serve both researchers and the general public.
 
 **Zico Abhi Dey** - [GitHub Profile](https://github.com/zicoabhidey)
