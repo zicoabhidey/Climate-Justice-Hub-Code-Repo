@@ -2,11 +2,9 @@
 
 This repository contains the interactive web modules and geospatial visualizations developed during my internship for the Climate Justice Hub at the Center for the Humanities.
 
-The project focuses on using digital tools to highlight the intersections between environmental data, public policy, and social equity.
-
 ## 🔗 Live Implementation
 
-The code in this repository is currently in action on the official project page: 👉 [Climate Justice Hub - Center for the Humanities](https://example.com)
+The code in this repository is currently in action on the official project page: 👉 [Climate Justice Hub - Center for the Humanities]([https://example.com](https://centerforthehumanities.org/project/climate-justice-hub/))
 
 ## 📂 Repository Structure
 
