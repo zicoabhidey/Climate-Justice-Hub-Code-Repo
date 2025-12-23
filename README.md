@@ -4,7 +4,7 @@ This repository contains the interactive web modules and geospatial visualizatio
 
 ## 🔗 Live Implementation
 
-The code in this repository is currently in action on the official project page: 👉 [Climate Justice Hub - Center for the Humanities][https://centerforthehumanities.org/project/climate-justice-hub/)
+The code in this repository is currently in action on the official project page: 👉 [Climate Justice Hub - Center for the Humanities](https://centerforthehumanities.org/project/climate-justice-hub/)
 
 ## 📂 Repository Structure
 
